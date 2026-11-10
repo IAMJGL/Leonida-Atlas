@@ -1,0 +1,6 @@
+{
+  "name": "Leonida Atlas",
+  "description": "An interactive fan-made open-world map companion and discovery tracker inspired by GTA VI's state of Leonida.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
