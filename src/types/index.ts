@@ -17,13 +17,14 @@ export interface CategoryMeta {
 }
 
 export type RegionId =
+  | 'mount-kalaga'
+  | 'ambrosia'
+  | 'gellhorn-shores'
+  | 'grassrivers'
   | 'vice-city-downtown'
   | 'vice-beach'
-  | 'gator-keys'
-  | 'grassrivers'
   | 'port-leonida'
-  | 'kelly-county'
-  | 'gellhorn-shores';
+  | 'gator-keys';
 
 export interface RegionInfo {
   id: RegionId;

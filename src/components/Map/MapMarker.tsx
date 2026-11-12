@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { CATEGORIES } from '../../data/locations';
 import { LocationItem } from '../../types';
+import { MAP_WIDTH, MAP_HEIGHT } from '../../constants/map';
 
 interface MapMarkerProps {
   location: LocationItem;
@@ -20,9 +21,9 @@ export const MapMarker: React.FC<MapMarkerProps> = ({
   const [isHovered, setIsHovered] = useState(false);
   const categoryMeta = CATEGORIES[location.category];
 
-  // SVG coordinate calculation (map viewBox is 2000 x 1400)
-  const cx = (location.x / 100) * 2000;
-  const cy = (location.y / 100) * 1400;
+  // SVG coordinate calculation (map viewBox is 2000 x 2800)
+  const cx = (location.x / 100) * MAP_WIDTH;
+  const cy = (location.y / 100) * MAP_HEIGHT;
 
   // Scale marker relative to zoom level so it stays crisp and readable
   // When zoomed in 4x, scale down slightly so it doesn't block the map

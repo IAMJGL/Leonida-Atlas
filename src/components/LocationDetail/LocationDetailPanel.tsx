@@ -148,15 +148,29 @@ export const LocationDetailPanel: React.FC<LocationDetailPanelProps> = ({
             {location.name}
           </h2>
           <div className="flex items-center gap-2 mt-1 text-xs">
-            {location.discovered ? (
-              <span className="text-emerald-400 font-semibold flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5" /> Discovered
-              </span>
-            ) : (
-              <span className="text-slate-400 flex items-center gap-1">
-                <Circle className="w-3.5 h-3.5" /> Undiscovered
-              </span>
-            )}
+            <button
+              type="button"
+              onClick={handleToggleDiscovered}
+              className={`font-semibold flex items-center gap-1.5 transition-colors cursor-pointer hover:underline text-left ${
+                location.discovered
+                  ? 'text-emerald-400 hover:text-emerald-300'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+              title={location.discovered ? 'Click to mark as Undiscovered' : 'Click to mark as Discovered'}
+              aria-label={location.discovered ? 'Mark as Undiscovered' : 'Mark as Discovered'}
+            >
+              {location.discovered ? (
+                <>
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Discovered</span>
+                </>
+              ) : (
+                <>
+                  <Circle className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                  <span>Undiscovered</span>
+                </>
+              )}
+            </button>
             <span className="text-slate-600">·</span>
             <span className="text-slate-400 font-mono text-[11px]">
               GPS {location.x.toFixed(1)}, {location.y.toFixed(1)}
@@ -166,12 +180,14 @@ export const LocationDetailPanel: React.FC<LocationDetailPanelProps> = ({
 
         {/* Primary Action Button: Toggle Discovered */}
         <button
+          type="button"
           onClick={handleToggleDiscovered}
-          className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-lg ${
+          className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer ${
             location.discovered
               ? 'bg-emerald-950/70 border border-emerald-500/50 text-emerald-300 hover:bg-emerald-900/60'
               : 'bg-gradient-to-r from-[#FF3B91] to-[#FF9B45] text-white hover:opacity-95 shadow-[0_0_16px_rgba(255,59,145,0.3)]'
           }`}
+          aria-label={location.discovered ? 'Mark as Undiscovered' : 'Mark Location as Discovered'}
         >
           {location.discovered ? (
             <>

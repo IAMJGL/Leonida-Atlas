@@ -45,7 +45,7 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
                 </span>
               </h2>
               <p className="text-xs text-slate-400">
-                Track your open-world discovery across all 7 Leonida sectors
+                Track your open-world discovery across all Leonida sectors
               </p>
             </div>
           </div>

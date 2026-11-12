@@ -6,6 +6,7 @@ import { MinimapRadar } from './MinimapRadar';
 import { LocationItem, MapSettings, Waypoint, RegionId } from '../../types';
 import { REGIONS } from '../../data/locations';
 import { playSound } from '../../utils/audio';
+import { MAP_WIDTH, MAP_HEIGHT } from '../../constants/map';
 
 interface InteractiveMapProps {
   locations: LocationItem[];
@@ -26,13 +27,13 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Zoom limits - allow zooming out far enough to view the entire state with ocean margins
+  // Zoom limits - allow zooming out far enough to view the entire elongated state
   const MIN_ZOOM = 0.2;
   const MAX_ZOOM = 4.5;
 
-  // Initial Map Transformation: fit full 2000x1400 state
-  const [zoom, setZoom] = useState<number>(0.5);
-  const [pan, setPan] = useState<{ x: number; y: number }>({ x: 100, y: 50 });
+  // Initial Map Transformation
+  const [zoom, setZoom] = useState<number>(0.38);
+  const [pan, setPan] = useState<{ x: number; y: number }>({ x: 100, y: 30 });
   const [hasAutoFitted, setHasAutoFitted] = useState(false);
 
   // Panning State
@@ -45,24 +46,24 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
     height: 800,
   });
 
-  // Simulated Player Location (in percentage 0-100) - default at Vice Beach South Point
-  const [playerPos] = useState<{ x: number; y: number }>({ x: 84.5, y: 48.0 });
+  // Simulated Player Location - at Ocean Drive in Southeast Vice Beach
+  const [playerPos] = useState<{ x: number; y: number }>({ x: 89.5, y: 65.0 });
 
-  // Reset / Fit full Leonida state inside the viewport with comfortable breathing room
+  // Reset / Fit full Leonida elongated peninsula inside the viewport with comfortable margins
   const resetMapPosition = useCallback(() => {
     if (containerRef.current) {
       const { clientWidth, clientHeight } = containerRef.current;
-      const targetZoom = Math.min((clientWidth * 0.9) / 2000, (clientHeight * 0.9) / 1400);
+      const targetZoom = Math.min((clientWidth * 0.92) / MAP_WIDTH, (clientHeight * 0.92) / MAP_HEIGHT);
       const clampedZoom = Math.max(MIN_ZOOM, Math.min(1.0, targetZoom));
-      const newPanX = (clientWidth - 2000 * clampedZoom) / 2;
-      const newPanY = (clientHeight - 1400 * clampedZoom) / 2;
+      const newPanX = (clientWidth - MAP_WIDTH * clampedZoom) / 2;
+      const newPanY = (clientHeight - MAP_HEIGHT * clampedZoom) / 2;
       setZoom(clampedZoom);
       setPan({ x: newPanX, y: newPanY });
       playSound('click', settings.soundEffects);
     }
   }, [settings.soundEffects]);
 
-  // Update viewport dimensions on mount & auto-fit full map
+  // Update viewport dimensions on mount & auto-fit full elongated map
   useEffect(() => {
     const updateSize = () => {
       if (containerRef.current) {
@@ -70,12 +71,12 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         setViewportSize({ width: clientWidth, height: clientHeight });
 
         if (!hasAutoFitted && clientWidth > 100 && clientHeight > 100) {
-          const targetZoom = Math.min((clientWidth * 0.9) / 2000, (clientHeight * 0.9) / 1400);
+          const targetZoom = Math.min((clientWidth * 0.92) / MAP_WIDTH, (clientHeight * 0.92) / MAP_HEIGHT);
           const clampedZoom = Math.max(MIN_ZOOM, Math.min(1.0, targetZoom));
           setZoom(clampedZoom);
           setPan({
-            x: (clientWidth - 2000 * clampedZoom) / 2,
-            y: (clientHeight - 1400 * clampedZoom) / 2,
+            x: (clientWidth - MAP_WIDTH * clampedZoom) / 2,
+            y: (clientHeight - MAP_HEIGHT * clampedZoom) / 2,
           });
           setHasAutoFitted(true);
         }
@@ -93,7 +94,6 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         const nextZoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, prevZoom * delta));
         if (nextZoom === prevZoom) return prevZoom;
 
-        // If client anchor provided, adjust pan so point stays stationary
         if (containerRef.current && clientAnchorX !== undefined && clientAnchorY !== undefined) {
           const rect = containerRef.current.getBoundingClientRect();
           const mouseX = clientAnchorX - rect.left;
@@ -122,7 +122,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
 
   // Mouse pan handlers
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (e.button !== 0) return; // Only left click
+    if (e.button !== 0) return;
     setIsDragging(true);
     setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
   };
@@ -139,7 +139,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
     setIsDragging(false);
   };
 
-  // Center on specific map SVG coordinate (e.g. from minimap or location selection)
+  // Center on specific map SVG coordinate
   const panToCoordinate = useCallback(
     (targetSvgX: number, targetSvgY: number, targetZoom?: number) => {
       const activeZoom = targetZoom || Math.max(zoom, 1.4);
@@ -156,37 +156,38 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
   // Focus when selectedLocation changes externally
   useEffect(() => {
     if (selectedLocation) {
-      const targetSvgX = (selectedLocation.x / 100) * 2000;
-      const targetSvgY = (selectedLocation.y / 100) * 1400;
-      panToCoordinate(targetSvgX, targetSvgY, Math.max(zoom, 1.5));
+      const targetSvgX = (selectedLocation.x / 100) * MAP_WIDTH;
+      const targetSvgY = (selectedLocation.y / 100) * MAP_HEIGHT;
+      panToCoordinate(targetSvgX, targetSvgY, Math.max(zoom, 1.4));
     }
-  }, [selectedLocation, panToCoordinate]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedLocation?.id]);
 
   // Jump to region
   const handleJumpToRegion = (regionId: RegionId) => {
     const region = REGIONS[regionId];
     if (region) {
-      const targetSvgX = (region.x / 100) * 2000;
-      const targetSvgY = (region.y / 100) * 1400;
-      panToCoordinate(targetSvgX, targetSvgY, 1.6);
+      const targetSvgX = (region.x / 100) * MAP_WIDTH;
+      const targetSvgY = (region.y / 100) * MAP_HEIGHT;
+      panToCoordinate(targetSvgX, targetSvgY, 1.5);
     }
   };
 
-  // Calculate distance from player to waypoint or selected location (in fictional miles)
+  // Calculate distance from player to waypoint (miles in elongated Leonida state)
   const calculateDistance = (tx: number, ty: number) => {
-    const dx = ((tx - playerPos.x) / 100) * 45; // ~45 miles width
-    const dy = ((ty - playerPos.y) / 100) * 32; // ~32 miles height
+    const dx = ((tx - playerPos.x) / 100) * 45;
+    const dy = ((ty - playerPos.y) / 100) * 65;
     const dist = Math.sqrt(dx * dx + dy * dy);
     return `${dist.toFixed(1)} mi`;
   };
 
   // Convert playerPos to SVG space
-  const playerSvgX = (playerPos.x / 100) * 2000;
-  const playerSvgY = (playerPos.y / 100) * 1400;
+  const playerSvgX = (playerPos.x / 100) * MAP_WIDTH;
+  const playerSvgY = (playerPos.y / 100) * MAP_HEIGHT;
 
   // Waypoint SVG coordinates
-  const waypointSvgX = waypoint ? (waypoint.x / 100) * 2000 : null;
-  const waypointSvgY = waypoint ? (waypoint.y / 100) * 1400 : null;
+  const waypointSvgX = waypoint ? (waypoint.x / 100) * MAP_WIDTH : null;
+  const waypointSvgY = waypoint ? (waypoint.y / 100) * MAP_HEIGHT : null;
 
   return (
     <div
@@ -200,11 +201,13 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
     >
-      {/* MAP SVG CANVAS */}
+      {/* MAP SVG CANVAS (2000 x 2800) */}
       <svg
-        viewBox="0 0 2000 1400"
-        className="w-[2000px] h-[1400px] origin-top-left transition-transform duration-75"
+        viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
+        className="origin-top-left transition-transform duration-75"
         style={{
+          width: `${MAP_WIDTH}px`,
+          height: `${MAP_HEIGHT}px`,
           transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
         }}
       >
@@ -314,7 +317,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         <button
           onClick={resetMapPosition}
           className="w-10 h-10 flex items-center justify-center bg-[#191B24]/90 hover:bg-[#252836] active:bg-[#2e3244] border border-slate-700/80 rounded-lg text-[#20D9D2] shadow-xl backdrop-blur-md transition-colors"
-          title="Fit Full State (Kelly County to Gator Keys)"
+          title="Fit Full State (Mount Kalaga to Leonida Keys)"
           aria-label="Fit entire state in view"
         >
           <Maximize2 className="w-4 h-4" />
@@ -322,7 +325,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
 
         {/* Focus Vice Metro North */}
         <button
-          onClick={() => panToCoordinate(1400, 600, 1.2)}
+          onClick={() => panToCoordinate(1500, 1780, 1.3)}
           className="w-10 h-10 flex items-center justify-center bg-[#191B24]/90 hover:bg-[#252836] border border-slate-700/80 rounded-lg text-[#FF3B91] shadow-xl backdrop-blur-md transition-colors"
           title="Focus Vice City Downtown"
           aria-label="Focus Vice City"
@@ -337,7 +340,14 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
           <MapPin className="w-3 h-3 text-[#20D9D2]" />
           <span>Sectors:</span>
         </span>
-        {Object.values(REGIONS).slice(0, 5).map((r) => (
+        {[
+          REGIONS['mount-kalaga'],
+          REGIONS['ambrosia'],
+          REGIONS['gellhorn-shores'],
+          REGIONS['grassrivers'],
+          REGIONS['vice-city-downtown'],
+          REGIONS['gator-keys'],
+        ].filter(Boolean).map((r) => (
           <button
             key={r.id}
             onClick={() => handleJumpToRegion(r.id)}

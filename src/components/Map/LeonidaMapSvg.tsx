@@ -1,5 +1,6 @@
 import React from 'react';
 import { MapStyleMode } from '../../types';
+import { MAP_WIDTH, MAP_HEIGHT } from '../../constants/map';
 
 interface LeonidaMapSvgProps {
   styleMode: MapStyleMode;
@@ -14,387 +15,494 @@ export const LeonidaMapSvg: React.FC<LeonidaMapSvgProps> = ({
   showDistricts,
   showGrid,
 }) => {
-  // Color variables depending on styleMode
   const isNight = styleMode === 'night';
   const isRecon = styleMode === 'recon';
 
-  // Ocean fill
+  // Palette definitions
   const oceanFill = isNight ? '#0b0c10' : isRecon ? '#08141e' : '#0c1524';
   const shallowWaterFill = isNight ? '#10141f' : isRecon ? '#0c2233' : '#11293d';
   const reefWaterFill = isNight ? '#131b2e' : isRecon ? '#103046' : '#133e54';
 
-  // Landmass
-  const mainlandFill = isNight ? '#13151f' : isRecon ? '#141d24' : '#19202a';
+  const mainlandFill = isNight ? '#13151f' : isRecon ? '#141d24' : '#18202a';
   const urbanFill = isNight ? '#1b1e2c' : isRecon ? '#1b2732' : '#222b3a';
   const wetlandsFill = isNight ? '#0e1818' : isRecon ? '#132420' : '#152b24';
   const beachFill = isNight ? '#2a2228' : isRecon ? '#2d2e24' : '#3e3629';
   const runwayFill = isNight ? '#282b3d' : isRecon ? '#263745' : '#2d3748';
+  const mountainFill = isNight ? '#181b2a' : isRecon ? '#182b28' : '#212936';
+  const mountainPeakFill = isNight ? '#212538' : isRecon ? '#1d3834' : '#2a3545';
 
-  // Roads
   const highwayStroke = isNight ? '#ff3b91' : isRecon ? '#00e5ff' : '#ff9b45';
-  const highwayGlow = isNight ? 'rgba(255, 59, 145, 0.4)' : isRecon ? 'rgba(0, 229, 255, 0.4)' : 'rgba(255, 155, 69, 0.25)';
+  const highwayGlow = isNight ? 'rgba(255, 59, 145, 0.45)' : isRecon ? 'rgba(0, 229, 255, 0.45)' : 'rgba(255, 155, 69, 0.3)';
   const arterialStroke = isNight ? '#3b4361' : isRecon ? '#2b4759' : '#414d63';
   const trailStroke = isNight ? '#222738' : isRecon ? '#1f342d' : '#2b3b33';
 
   return (
     <g className="leonida-map-graphics pointer-events-none">
       <defs>
-        {/* Subtle grid pattern for recon / tactical feel */}
-        <pattern id="tactical-grid" width="80" height="80" patternUnits="userSpaceOnUse">
-          <path d="M 80 0 L 0 0 0 80" fill="none" stroke="rgba(255, 255, 255, 0.04)" strokeWidth="0.8" />
-          <circle cx="80" cy="80" r="1.5" fill="rgba(32, 217, 210, 0.2)" />
+        {/* Tactical grid pattern */}
+        <pattern id="tactical-grid-tall" width="100" height="100" patternUnits="userSpaceOnUse">
+          <path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255, 255, 255, 0.04)" strokeWidth="0.8" />
+          <circle cx="100" cy="100" r="1.5" fill="rgba(32, 217, 210, 0.2)" />
         </pattern>
 
         {/* Urban city block hatching */}
-        <pattern id="urban-blocks" width="16" height="16" patternUnits="userSpaceOnUse">
+        <pattern id="urban-blocks-grid" width="16" height="16" patternUnits="userSpaceOnUse">
           <rect width="14" height="14" fill="none" stroke="rgba(255, 255, 255, 0.04)" strokeWidth="0.75" />
         </pattern>
 
         {/* Wetlands sawgrass pattern */}
-        <pattern id="wetlands-texture" width="30" height="30" patternUnits="userSpaceOnUse">
-          <path d="M 5,25 Q 10,12 8,5 M 12,25 Q 17,10 20,6 M 22,25 Q 24,14 27,8" fill="none" stroke="rgba(32, 217, 210, 0.08)" strokeWidth="1" />
+        <pattern id="sawgrass-texture" width="30" height="30" patternUnits="userSpaceOnUse">
+          <path d="M 5,25 Q 10,12 8,5 M 12,25 Q 17,10 20,6 M 22,25 Q 24,14 27,8" fill="none" stroke="rgba(32, 217, 210, 0.09)" strokeWidth="1" />
         </pattern>
 
-        {/* Gradient for water depth */}
-        <radialGradient id="ocean-glow" cx="50%" cy="45%" r="65%">
-          <stop offset="0%" stopColor="#122538" stopOpacity="0.4" />
-          <stop offset="100%" stopColor="#080c14" stopOpacity="0.8" />
+        {/* Pine forest texture for Mount Kalaga */}
+        <pattern id="pine-forest-texture" width="24" height="24" patternUnits="userSpaceOnUse">
+          <path d="M 12,4 L 7,16 L 17,16 Z M 12,16 L 12,20" fill="none" stroke="rgba(168, 85, 247, 0.12)" strokeWidth="0.8" />
+        </pattern>
+
+        {/* Depth gradients */}
+        <radialGradient id="atlantic-deep-glow" cx="80%" cy="65%" r="70%">
+          <stop offset="0%" stopColor="#142c44" stopOpacity="0.45" />
+          <stop offset="100%" stopColor="#080c14" stopOpacity="0.85" />
         </radialGradient>
       </defs>
 
-      {/* 1. BASE OCEAN LAYER */}
-      <rect x="0" y="0" width="2000" height="1400" fill={oceanFill} />
-      <rect x="0" y="0" width="2000" height="1400" fill="url(#ocean-glow)" />
+      {/* 1. BASE OCEAN LAYER (2000 x 2800) */}
+      <rect x="0" y="0" width={MAP_WIDTH} height={MAP_HEIGHT} fill={oceanFill} />
+      <rect x="0" y="0" width={MAP_WIDTH} height={MAP_HEIGHT} fill="url(#atlantic-deep-glow)" />
 
-      {/* Bathymetric depth contours / shallow coastal shelves */}
-      {/* Atlantic shelf around Vice Beach & Keys */}
+      {/* Bathymetric coastal shelves (Shallow water & coral reefs surrounding elongated peninsula) */}
+      {/* Atlantic Shelf on East Coast */}
       <path
-        d="M 1250,150 C 1450,220 1850,380 1880,720 C 1900,980 1680,1200 1380,1280 C 1120,1350 820,1320 620,1220 C 520,1160 480,1050 540,940 C 640,780 720,700 860,640 C 980,590 1080,480 1140,320 Z"
+        d="
+          M 1450,260
+          C 1650,380 1850,750 1860,1250
+          C 1870,1650 1960,1850 1920,2150
+          C 1880,2350 1680,2480 1480,2520
+          C 1250,2560 980,2720 720,2780
+          C 540,2810 420,2740 480,2620
+          C 560,2480 750,2340 880,2220
+          C 960,2150 920,2020 840,1920
+          C 720,1780 620,1620 540,1420
+          C 460,1220 520,950 580,720
+          C 640,480 950,320 1250,260
+          Z
+        "
         fill={shallowWaterFill}
-        opacity="0.75"
+        opacity="0.85"
       />
+
+      {/* Inner Reef Water (Turquoise waters around Vice Beach, Biscayne Bay & Keys) */}
       <path
-        d="M 1320,240 C 1520,320 1780,480 1800,740 C 1820,950 1620,1140 1320,1200 C 1090,1250 880,1220 740,1140 C 680,1080 720,980 820,920 C 940,840 1120,760 1200,600 C 1250,500 1280,360 1320,240 Z"
+        d="
+          M 1540,1400
+          C 1620,1520 1850,1620 1880,1850
+          C 1900,2050 1850,2220 1680,2300
+          C 1520,2380 1320,2460 1120,2550
+          C 920,2640 760,2740 640,2750
+          C 550,2760 520,2680 580,2590
+          C 680,2460 880,2360 1050,2280
+          C 1220,2200 1360,2080 1420,1920
+          C 1480,1780 1490,1550 1540,1400
+          Z
+        "
         fill={reefWaterFill}
         opacity="0.8"
       />
 
-      {/* 2. MAINLAND LEONIDA LANDMASS */}
-      {/* Huge realistic continental mass with natural peninsulas, bays, and sculpted northern mountain ridges */}
+      {/* 2. MAINLAND LEONIDA ELONGATED PENINSULA (Tall north-to-south Florida-inspired landmass) */}
       <path
         d="
-          M 100,320
-          C 105,230 140,165 220,125
-          C 320,85 450,90 580,75
-          C 690,65 770,52 870,55
-          C 970,58 1070,72 1190,78
-          C 1310,82 1430,110 1510,150
-          C 1555,172 1575,210 1550,265
-          C 1520,320 1480,380 1440,440
-          C 1390,320 1350,380 1320,440
-          C 1300,500 1320,540 1360,590
-          C 1400,640 1420,700 1410,760
-          C 1390,850 1340,920 1260,980
-          C 1180,1040 1080,1080 980,1110
-          C 880,1140 760,1130 680,1090
-          C 600,1050 540,980 500,900
-          C 460,820 440,720 400,660
-          C 360,600 280,570 220,530
-          C 160,490 120,420 100,320
+          M 180,480
+          C 190,360 260,270 420,250
+          C 580,230 840,235 1120,245
+          C 1340,255 1520,285 1620,380
+          C 1660,490 1640,650 1600,820
+          C 1560,980 1520,1140 1510,1300
+          C 1500,1420 1530,1520 1560,1640
+          C 1580,1720 1540,1820 1480,1920
+          C 1440,2000 1420,2100 1360,2180
+          C 1300,2260 1200,2295 1100,2290
+          C 960,2280 860,2220 780,2120
+          C 720,2020 700,1890 680,1750
+          C 660,1620 580,1520 520,1420
+          C 480,1360 380,1350 320,1300
+          C 280,1230 300,1140 360,1080
+          C 420,1020 520,1040 560,960
+          C 600,880 560,740 480,640
+          C 390,560 260,540 180,480
           Z
         "
         fill={mainlandFill}
-        stroke={isNight ? 'rgba(255, 59, 145, 0.25)' : 'rgba(32, 217, 210, 0.25)'}
-        strokeWidth="1.5"
+        stroke={isNight ? 'rgba(255, 59, 145, 0.3)' : 'rgba(32, 217, 210, 0.3)'}
+        strokeWidth="1.8"
       />
 
-      {/* Mount Ambrosia & Kelly Ridge Elevation Contours (Northern topography) */}
-      <g id="kelly-topography">
-        {/* Shaded mountain elevation massif */}
+      {/* 3. NORTH REGION: MOUNT KALAGA NATIONAL PARK (Rugged Pine Ridges & Alpine Topography) */}
+      <g id="mount-kalaga-park">
+        {/* Mountain Massif Elevation Base */}
         <path
           d="
-            M 600,180
-            C 660,130 750,110 840,100
-            C 930,90 1020,105 1100,135
-            C 1150,155 1180,190 1140,215
-            C 1080,240 980,225 900,210
-            C 820,195 720,220 650,215
+            M 620,260
+            C 720,245 920,250 1150,260
+            C 1280,270 1380,320 1360,420
+            C 1340,510 1220,580 1100,620
+            C 980,660 820,640 700,590
+            C 600,540 550,450 580,360
+            C 600,300 605,270 620,260
             Z
           "
-          fill={isNight ? '#161928' : isRecon ? '#172b2a' : '#1e2832'}
-          stroke="rgba(168, 85, 247, 0.2)"
-          strokeWidth="1"
+          fill={mountainFill}
+          stroke="rgba(168, 85, 247, 0.25)"
+          strokeWidth="1.5"
         />
-        {/* Higher inner ridge crest */}
+        {/* Pine forest pattern */}
         <path
           d="
-            M 690,160
-            C 750,125 820,115 880,110
-            C 950,105 1010,120 1060,145
-            C 1020,170 950,155 890,150
-            C 830,145 760,165 690,160
+            M 620,260
+            C 720,245 920,250 1150,260
+            C 1280,270 1380,320 1360,420
+            C 1340,510 1220,580 1100,620
+            C 980,660 820,640 700,590
+            C 600,540 550,450 580,360
             Z
           "
-          fill={isNight ? '#1b1f32' : isRecon ? '#1a3734' : '#24323e'}
-          stroke="rgba(168, 85, 247, 0.3)"
-          strokeWidth="1"
+          fill="url(#pine-forest-texture)"
+          opacity="0.8"
         />
-        {/* Mountain peak markers */}
-        <polygon points="860,85 870,105 850,105" fill="#a855f7" opacity="0.6" />
-        <polygon points="980,95 990,115 970,115" fill="#a855f7" opacity="0.5" />
-        <polygon points="760,105 770,122 750,122" fill="#a855f7" opacity="0.4" />
+
+        {/* High Elevation Ridgelines & Peaks */}
+        <path
+          d="
+            M 760,310
+            C 840,285 960,290 1080,310
+            C 1160,330 1200,380 1170,440
+            C 1120,490 1020,520 920,510
+            C 820,500 760,450 740,390
+            C 725,340 740,320 760,310
+            Z
+          "
+          fill={mountainPeakFill}
+          stroke="rgba(168, 85, 247, 0.4)"
+          strokeWidth="1.2"
+        />
+
+        {/* Mountain Peaks Triangles with Elevation Accents */}
+        <polygon points="920,330 940,370 900,370" fill="#a855f7" opacity="0.75" />
+        <polygon points="1040,345 1060,385 1020,385" fill="#a855f7" opacity="0.6" />
+        <polygon points="820,360 838,395 802,395" fill="#a855f7" opacity="0.55" />
+        <polygon points="980,420 998,455 962,455" fill="#a855f7" opacity="0.5" />
+
+        {/* Kalaga River Gorge (Winding rapids carving south-east from the peaks) */}
+        <path
+          d="
+            M 920,370
+            Q 860,430 890,490
+            T 960,570
+            T 920,660
+            T 1020,760
+            T 1080,850
+          "
+          fill="none"
+          stroke={shallowWaterFill}
+          strokeWidth="12"
+          strokeLinecap="round"
+        />
+        {/* Inner river stream */}
+        <path
+          d="
+            M 920,370
+            Q 860,430 890,490
+            T 960,570
+            T 920,660
+            T 1020,760
+            T 1080,850
+          "
+          fill="none"
+          stroke="#20d9d2"
+          strokeWidth="3"
+          strokeLinecap="round"
+          opacity="0.8"
+        />
       </g>
 
-      {/* Biscayne / Vice Bay water indentation carved into the east coast */}
-      <path
-        d="
-          M 1340,430
-          C 1300,480 1280,560 1290,640
-          C 1300,720 1350,800 1330,880
-          C 1310,930 1260,970 1200,990
-          C 1140,1005 1060,980 1040,930
-          C 1010,870 1040,800 1080,740
-          C 1120,680 1140,610 1120,540
-          C 1100,470 1050,420 1020,350
-          C 1000,300 1030,240 1090,220
-          C 1160,200 1220,230 1260,280
-          C 1300,330 1350,380 1340,430
-          Z
-        "
-        fill={shallowWaterFill}
-        stroke="rgba(32, 217, 210, 0.2)"
-        strokeWidth="1"
-      />
-
-      {/* 3. LAKE AMBROSIA (INLAND LAKE IN NORTH KELLY COUNTY) */}
-      <g id="lake-ambrosia">
+      {/* 4. NORTH-CENTRAL INTERIOR: AMBROSIA & LAKE AMBROSIA */}
+      <g id="ambrosia-lake-basin">
+        {/* Lake Ambrosia (Sprawling freshwater inland lake) */}
         <path
           d="
-            M 720,220
-            C 780,210 860,230 900,270
-            C 940,310 930,370 890,410
-            C 850,450 780,480 710,470
-            C 640,460 590,410 610,340
-            C 630,270 670,230 720,220
+            M 950,860
+            C 1060,830 1190,850 1260,910
+            C 1330,970 1340,1060 1290,1140
+            C 1230,1210 1120,1240 1020,1210
+            C 920,1180 870,1100 890,1010
+            C 910,930 920,870 950,860
             Z
           "
           fill={shallowWaterFill}
-          stroke="rgba(32, 217, 210, 0.3)"
-          strokeWidth="1.2"
+          stroke="rgba(32, 217, 210, 0.4)"
+          strokeWidth="1.8"
         />
-        {/* Island inside Lake Ambrosia */}
-        <path d="M 740,320 C 760,310 790,320 780,350 C 770,370 730,360 740,320 Z" fill={mainlandFill} />
-        {/* River feeding from Ambrosia to the bay */}
+        {/* Central Pine Island in Lake Ambrosia */}
+        <ellipse cx="1110" cy="1030" rx="45" ry="28" fill={mainlandFill} stroke="rgba(32, 217, 210, 0.3)" strokeWidth="1" />
+        {/* Spillway dam and outlet canal toward southeast */}
+        <rect x="1270" y="1020" width="30" height="14" fill="#38bdf8" opacity="0.8" />
         <path
-          d="M 890,370 Q 980,400 1040,440 T 1120,540"
+          d="M 1290,1030 Q 1380,1090 1440,1190 T 1510,1360"
           fill="none"
           stroke={shallowWaterFill}
-          strokeWidth="14"
+          strokeWidth="10"
           strokeLinecap="round"
         />
+
+        {/* Agricultural citrus groves & speedway land */}
+        <ellipse cx="980" cy="980" rx="90" ry="60" fill="none" stroke="rgba(255, 155, 69, 0.15)" strokeWidth="1" strokeDasharray="4 4" />
       </g>
 
-      {/* 4. GRASSRIVERS (EVERGLADES WETLANDS & WATERWAYS) */}
-      <g id="grassrivers-marshes">
+      {/* 5. WEST COAST: PORT GELLHORN & GELLHORN BAY */}
+      <g id="port-gellhorn-region">
+        {/* Gellhorn Coastal Bay indentation */}
         <path
           d="
-            M 520,720
-            C 560,650 640,620 740,640
-            C 840,660 920,740 940,840
-            C 960,940 900,1020 810,1060
-            C 720,1100 620,1070 560,1010
-            C 500,950 480,850 490,780
+            M 310,1180
+            C 260,1230 250,1310 290,1380
+            C 330,1440 400,1470 470,1450
+            C 440,1390 410,1320 370,1260
+            C 340,1210 320,1190 310,1180
+            Z
+          "
+          fill={shallowWaterFill}
+          stroke="rgba(56, 189, 248, 0.35)"
+          strokeWidth="1.2"
+        />
+        {/* Port Gellhorn urban footprint & docks */}
+        <path
+          d="M 360,1180 L 470,1170 L 490,1300 L 380,1330 Z"
+          fill={urbanFill}
+          stroke="rgba(56, 189, 248, 0.4)"
+          strokeWidth="1.5"
+        />
+        <path d="M 360,1180 L 470,1170 L 490,1300 L 380,1330 Z" fill="url(#urban-blocks-grid)" opacity="0.4" />
+        {/* Marina piers */}
+        <line x1="360" y1="1200" x2="310" y2="1210" stroke="#38bdf8" strokeWidth="3" />
+        <line x1="370" y1="1240" x2="320" y2="1250" stroke="#38bdf8" strokeWidth="3" />
+      </g>
+
+      {/* 6. SOUTH-CENTRAL INTERIOR: GRASSRIVERS (SUBTROPICAL WETLANDS & EVERGLADES) */}
+      <g id="grassrivers-wetlands">
+        {/* Immense wetlands basin */}
+        <path
+          d="
+            M 720,1480
+            C 820,1420 1020,1430 1180,1490
+            C 1290,1540 1340,1650 1310,1790
+            C 1270,1920 1180,2020 1050,2080
+            C 920,2140 780,2080 720,1980
+            C 660,1860 640,1720 670,1590
+            C 685,1530 700,1500 720,1480
             Z
           "
           fill={wetlandsFill}
-          opacity="0.85"
+          opacity="0.9"
         />
         {/* Sawgrass texture */}
         <path
           d="
-            M 520,720
-            C 560,650 640,620 740,640
-            C 840,660 920,740 940,840
-            C 960,940 900,1020 810,1060
-            C 720,1100 620,1070 560,1010
-            C 500,950 480,850 490,780
+            M 720,1480
+            C 820,1420 1020,1430 1180,1490
+            C 1290,1540 1340,1650 1310,1790
+            C 1270,1920 1180,2020 1050,2080
+            C 920,2140 780,2080 720,1980
+            C 660,1860 640,1720 670,1590
             Z
           "
-          fill="url(#wetlands-texture)"
-          opacity="0.6"
+          fill="url(#sawgrass-texture)"
+          opacity="0.7"
         />
-        {/* Intricate winding bayou canals */}
+
+        {/* Intricate winding alligator bayous & airboat river paths */}
         <path
           d="
-            M 620,640 Q 660,720 630,790 T 710,870 T 670,960 T 750,1040
-            M 730,680 Q 780,740 760,820 T 840,910 T 800,1000
-            M 550,780 Q 600,820 590,890 T 650,970
+            M 780,1520 Q 840,1620 800,1710 T 890,1820 T 830,1940 T 940,2040
+            M 920,1560 Q 990,1640 960,1740 T 1060,1860 T 1000,1980
+            M 1080,1620 Q 1140,1710 1110,1810 T 1190,1930
+            M 720,1660 Q 770,1730 750,1820 T 810,1910
           "
           fill="none"
           stroke={shallowWaterFill}
-          strokeWidth="8"
+          strokeWidth="10"
           strokeLinecap="round"
         />
       </g>
 
-      {/* 5. COASTAL ISLANDS & BARRIERS */}
-      {/* Vice Beach Barrier Island (Long slender barrier island on the Atlantic) */}
-      <g id="vice-beach-barrier">
-        {/* Sand beach strip */}
+      {/* 7. SOUTHEAST COAST: VICE CITY METRO, BISCAYNE BAY & VICE BEACH */}
+      {/* Biscayne Bay Water Indentation */}
+      <path
+        d="
+          M 1560,1650
+          C 1520,1720 1500,1820 1510,1920
+          C 1520,2020 1580,2100 1560,2180
+          C 1540,2220 1480,2250 1420,2230
+          C 1360,2160 1380,2050 1420,1960
+          C 1460,1870 1450,1750 1440,1680
+          C 1470,1630 1520,1620 1560,1650
+          Z
+        "
+        fill={shallowWaterFill}
+        stroke="rgba(32, 217, 210, 0.3)"
+        strokeWidth="1.2"
+      />
+
+      {/* Downtown Vice High-Density Footprint */}
+      <g id="downtown-vice">
         <path
           d="
-            M 1660,340
-            C 1690,440 1730,590 1740,750
-            C 1745,860 1720,950 1680,1020
-            C 1660,1010 1640,990 1645,950
-            C 1660,860 1675,740 1665,600
-            C 1655,470 1630,390 1610,340
+            M 1400,1680
+            L 1550,1670
+            L 1590,1820
+            L 1520,1890
+            L 1420,1870
+            L 1390,1770
+            Z
+          "
+          fill={urbanFill}
+          stroke="rgba(32, 217, 210, 0.45)"
+          strokeWidth="1.6"
+        />
+        <path
+          d="
+            M 1400,1680
+            L 1550,1670
+            L 1590,1820
+            L 1520,1890
+            L 1420,1870
+            L 1390,1770
+            Z
+          "
+          fill="url(#urban-blocks-grid)"
+          opacity="0.55"
+        />
+        {/* Neon downtown glow */}
+        <ellipse cx="1490" cy="1780" rx="110" ry="85" fill={isNight ? 'rgba(32, 217, 210, 0.1)' : 'rgba(32, 217, 210, 0.05)'} />
+      </g>
+
+      {/* Vice City International Airport (Southwest of Downtown) */}
+      <g id="escobar-international">
+        <path d="M 1270,1880 L 1400,1860 L 1420,1990 L 1290,2010 Z" fill={runwayFill} />
+        {/* Runway 1 (Diagonal) */}
+        <line x1="1285" y1="1890" x2="1405" y2="1995" stroke="#ffffff" strokeWidth="4" strokeDasharray="14 8" opacity="0.6" />
+        {/* Runway 2 (Cross Runway) */}
+        <line x1="1395" y1="1895" x2="1295" y2="1985" stroke="#ffffff" strokeWidth="4" strokeDasharray="14 8" opacity="0.6" />
+        {/* Terminal building */}
+        <rect x="1335" y="1925" width="36" height="26" rx="4" fill="#38bdf8" opacity="0.75" />
+      </g>
+
+      {/* Causeway Islands (Mid-Bay archipelago: Starfish & Venetian) */}
+      <g id="causeway-islands">
+        {/* Starfish Island */}
+        <polygon points="1630,1750 1680,1740 1705,1780 1675,1815 1625,1800" fill={urbanFill} stroke="rgba(32, 217, 210, 0.4)" strokeWidth="1" />
+        {/* Venetian West */}
+        <ellipse cx="1590" cy="1690" rx="36" ry="18" transform="rotate(-15 1590 1690)" fill={urbanFill} stroke="rgba(32, 217, 210, 0.35)" strokeWidth="1" />
+        {/* Venetian East */}
+        <ellipse cx="1680" cy="1670" rx="42" ry="20" transform="rotate(-10 1680 1670)" fill={urbanFill} stroke="rgba(32, 217, 210, 0.35)" strokeWidth="1" />
+      </g>
+
+      {/* Vice Beach Atlantic Barrier Island (Slender barrier running north-south) */}
+      <g id="vice-beach-island">
+        {/* Sand beach coastline */}
+        <path
+          d="
+            M 1740,1540
+            C 1780,1660 1830,1840 1840,2020
+            C 1845,2140 1820,2240 1770,2310
+            C 1750,2290 1730,2260 1735,2210
+            C 1750,2100 1765,1950 1755,1800
+            C 1745,1670 1715,1590 1690,1540
             Z
           "
           fill={beachFill}
-          stroke="rgba(255, 155, 69, 0.4)"
-          strokeWidth="1"
-        />
-        {/* Urban spine of Vice Beach / Ocean Drive */}
-        <path
-          d="
-            M 1640,360
-            C 1665,450 1700,590 1710,740
-            C 1715,840 1695,930 1660,980
-            C 1645,960 1630,920 1635,850
-            C 1645,740 1650,620 1640,490
-            C 1630,410 1615,370 1605,350
-            Z
-          "
-          fill={urbanFill}
-          stroke="rgba(255, 59, 145, 0.3)"
+          stroke="rgba(255, 155, 69, 0.45)"
           strokeWidth="1.2"
         />
-        {/* Urban grid on Vice Beach */}
+        {/* Ocean Drive urban spine */}
         <path
           d="
-            M 1640,360
-            C 1665,450 1700,590 1710,740
-            C 1715,840 1695,930 1660,980
-            C 1645,960 1630,920 1635,850
-            C 1645,740 1650,620 1640,490
-            C 1630,410 1615,370 1605,350
+            M 1730,1560
+            C 1760,1680 1800,1840 1810,2010
+            C 1815,2110 1790,2210 1750,2260
+            C 1735,2230 1720,2180 1725,2100
+            C 1735,1980 1740,1840 1730,1700
+            C 1720,1610 1700,1565 1690,1550
             Z
           "
-          fill="url(#urban-blocks)"
-          opacity="0.4"
+          fill={urbanFill}
+          stroke="rgba(255, 59, 145, 0.4)"
+          strokeWidth="1.5"
+        />
+        <path
+          d="
+            M 1730,1560
+            C 1760,1680 1800,1840 1810,2010
+            C 1815,2110 1790,2210 1750,2260
+            C 1735,2230 1720,2180 1725,2100
+            C 1735,1980 1740,1840 1730,1700
+            Z
+          "
+          fill="url(#urban-blocks-grid)"
+          opacity="0.45"
         />
       </g>
 
-      {/* Starfish & Venetian Causeway Islands (Mid-Bay archipelago) */}
-      <g id="bay-islands">
-        {/* Island 1: Starfish Island */}
-        <polygon points="1470,580 1520,570 1545,610 1515,645 1465,630" fill={urbanFill} stroke="rgba(32, 217, 210, 0.3)" strokeWidth="1" />
-        {/* Island 2: Venetian West */}
-        <ellipse cx="1430" cy="520" rx="35" ry="18" transform="rotate(-15 1430 520)" fill={urbanFill} stroke="rgba(32, 217, 210, 0.3)" strokeWidth="1" />
-        {/* Island 3: Venetian East */}
-        <ellipse cx="1520" cy="500" rx="42" ry="20" transform="rotate(-10 1520 500)" fill={urbanFill} stroke="rgba(32, 217, 210, 0.3)" strokeWidth="1" />
-      </g>
-
-      {/* Port Leonida (Reclaimed industrial container terminal) */}
-      <g id="port-leonida-island">
+      {/* Port Leonida (Industrial container terminal south of Downtown) */}
+      <g id="port-leonida-dockyard">
         <polygon
-          points="1420,830 1540,820 1560,920 1490,950 1440,940 1410,880"
+          points="1500,2060 1640,2050 1665,2180 1580,2215 1520,2200 1490,2130"
           fill={urbanFill}
-          stroke="rgba(251, 191, 36, 0.4)"
-          strokeWidth="1.5"
+          stroke="rgba(251, 191, 36, 0.5)"
+          strokeWidth="1.6"
         />
-        {/* Docks and slips */}
-        <rect x="1460" y="850" width="60" height="15" fill={shallowWaterFill} />
-        <rect x="1470" y="885" width="55" height="15" fill={shallowWaterFill} />
+        <rect x="1540" y="2090" width="70" height="18" fill={shallowWaterFill} />
+        <rect x="1550" y="2130" width="65" height="18" fill={shallowWaterFill} />
         {/* Gantry crane positions */}
-        <circle cx="1540" cy="840" r="3" fill="#fbbf24" />
-        <circle cx="1545" cy="870" r="3" fill="#fbbf24" />
-        <circle cx="1550" cy="900" r="3" fill="#fbbf24" />
+        <circle cx="1640" cy="2070" r="3.5" fill="#fbbf24" />
+        <circle cx="1645" cy="2110" r="3.5" fill="#fbbf24" />
+        <circle cx="1650" cy="2150" r="3.5" fill="#fbbf24" />
       </g>
 
-      {/* Gator Keys Archipelago (Curving chain southwest) */}
-      <g id="gator-keys-chain">
-        {/* Key Largo equivalent (Upper Key) */}
-        <path d="M 1220,1110 C 1260,1130 1280,1165 1250,1190 C 1210,1210 1160,1170 1180,1130 Z" fill={mainlandFill} stroke="rgba(255, 155, 69, 0.3)" strokeWidth="1" />
-        {/* Islamorada equivalent (Middle Key) */}
-        <path d="M 1120,1180 C 1150,1195 1165,1230 1130,1250 C 1090,1260 1060,1225 1080,1195 Z" fill={mainlandFill} stroke="rgba(255, 155, 69, 0.3)" strokeWidth="1" />
-        {/* Marathon equivalent */}
-        <path d="M 1020,1235 C 1050,1245 1060,1275 1030,1295 C 990,1310 965,1275 985,1250 Z" fill={mainlandFill} stroke="rgba(255, 155, 69, 0.3)" strokeWidth="1" />
-        {/* Lower Key / Key West equivalent */}
-        <path d="M 910,1280 C 940,1285 960,1320 930,1345 C 880,1365 840,1330 865,1295 Z" fill={urbanFill} stroke="rgba(255, 155, 69, 0.4)" strokeWidth="1.2" />
-        {/* Outlying Coral Atolls */}
-        <circle cx="810" cy="1330" r="16" fill={beachFill} stroke="rgba(32, 217, 210, 0.4)" strokeWidth="1" />
-        <circle cx="760" cy="1345" r="10" fill={beachFill} stroke="rgba(32, 217, 210, 0.4)" strokeWidth="1" />
+      {/* 8. SOUTHERN OCEAN EXTENSION: LEONIDA KEYS (Archipelago curving south/southwest) */}
+      <g id="leonida-keys-chain">
+        {/* Upper Key (Key Largo equivalent) */}
+        <path d="M 1280,2300 C 1330,2330 1350,2380 1310,2420 C 1260,2440 1200,2390 1220,2330 Z" fill={mainlandFill} stroke="rgba(255, 155, 69, 0.35)" strokeWidth="1.2" />
+        {/* Plantation & Islamorada Key */}
+        <path d="M 1150,2400 C 1190,2420 1210,2470 1170,2500 C 1120,2515 1070,2470 1100,2420 Z" fill={mainlandFill} stroke="rgba(255, 155, 69, 0.35)" strokeWidth="1.2" />
+        {/* Marathon Key */}
+        <path d="M 1010,2485 C 1050,2500 1065,2545 1025,2575 C 980,2590 940,2545 965,2505 Z" fill={mainlandFill} stroke="rgba(255, 155, 69, 0.35)" strokeWidth="1.2" />
+        {/* Big Pine Key */}
+        <path d="M 870,2560 C 910,2570 925,2615 885,2645 C 840,2660 800,2615 825,2575 Z" fill={mainlandFill} stroke="rgba(255, 155, 69, 0.35)" strokeWidth="1.2" />
+        {/* Key West / Pelican Key (Southernmost Point) */}
+        <path d="M 720,2640 C 760,2645 785,2695 745,2730 C 690,2755 640,2710 670,2660 Z" fill={urbanFill} stroke="rgba(255, 155, 69, 0.5)" strokeWidth="1.5" />
+        {/* Outlying Coral Atolls & Reefs */}
+        <circle cx="580,2720" r="22" fill={beachFill} stroke="rgba(32, 217, 210, 0.5)" strokeWidth="1.2" />
+        <circle cx="510,2745" r="14" fill={beachFill} stroke="rgba(32, 217, 210, 0.5)" strokeWidth="1.2" />
       </g>
 
-      {/* 6. DOWNTOWN VICE METRO & RUNWAYS */}
-      <g id="downtown-vice-blocks">
-        {/* High-density commercial footprint */}
-        <path
-          d="
-            M 1260,490
-            L 1380,480
-            L 1420,620
-            L 1350,680
-            L 1280,660
-            L 1250,580
-            Z
-          "
-          fill={urbanFill}
-          stroke="rgba(32, 217, 210, 0.4)"
-          strokeWidth="1.5"
-        />
-        <path
-          d="
-            M 1260,490
-            L 1380,480
-            L 1420,620
-            L 1350,680
-            L 1280,660
-            L 1250,580
-            Z
-          "
-          fill="url(#urban-blocks)"
-          opacity="0.5"
-        />
-        {/* Neon core accent wash */}
-        <ellipse cx="1340" cy="570" rx="90" ry="70" fill={isNight ? 'rgba(32, 217, 210, 0.08)' : 'rgba(32, 217, 210, 0.04)'} />
-      </g>
-
-      {/* Vice City International Airport */}
-      <g id="airport-escobar">
-        <path d="M 1150,660 L 1240,650 L 1260,760 L 1170,780 Z" fill={runwayFill} />
-        {/* Runway 1 (Diagonal NW to SE) */}
-        <line x1="1160" y1="670" x2="1245" y2="765" stroke="#ffffff" strokeWidth="4" strokeDasharray="14 8" opacity="0.6" />
-        {/* Runway 2 (Cross Runway NE to SW) */}
-        <line x1="1235" y1="675" x2="1165" y2="755" stroke="#ffffff" strokeWidth="4" strokeDasharray="14 8" opacity="0.6" />
-        {/* Terminal building */}
-        <rect x="1195" y="700" width="30" height="24" rx="4" fill="#38bdf8" opacity="0.7" />
-      </g>
-
-      {/* Port Gellhorn coastal area (West Coast) */}
-      <g id="port-gellhorn">
-        <path d="M 360,540 L 460,530 L 480,640 L 380,670 Z" fill={urbanFill} stroke="rgba(56, 189, 248, 0.3)" strokeWidth="1" />
-        <path d="M 360,540 L 460,530 L 480,640 L 380,670 Z" fill="url(#urban-blocks)" opacity="0.3" />
-      </g>
-
-      {/* 7. ROAD & HIGHWAY NETWORK */}
+      {/* 9. ROAD & HIGHWAY NETWORK (Scaled across 2800 height) */}
       {showRoads && (
         <g id="road-network">
-          {/* Secondary Arterial roads & Country connectors */}
+          {/* Secondary Arterial Connectors */}
           <path
             d="
-              M 800,68 L 800,220
-              M 800,470 Q 750,560 740,640
-              M 480,580 Q 600,560 720,540
-              M 460,630 Q 550,700 680,680
-              M 1120,420 Q 1190,460 1260,490
-              M 1260,660 L 1220,770
-              M 1200,900 Q 1150,960 1080,1020
-              M 1620,400 L 1660,400
-              M 1640,620 L 1690,620
-              M 1660,820 L 1710,820
+              M 880,245 L 880,450
+              M 880,650 Q 820,750 820,860
+              M 820,1180 Q 750,1320 740,1480
+              M 480,1280 Q 640,1220 820,1180
+              M 460,1350 Q 580,1460 740,1480
+              M 1260,910 Q 1380,980 1480,1050
+              M 1480,1050 L 1520,1350
+              M 1360,1880 L 1290,2010
+              M 1720,1650 L 1780,1650
+              M 1740,1950 L 1800,1950
+              M 1740,2150 L 1800,2150
             "
             fill="none"
             stroke={arterialStroke}
@@ -406,10 +514,10 @@ export const LeonidaMapSvg: React.FC<LeonidaMapSvgProps> = ({
           {/* Dirt & Marsh Trails in Grassrivers */}
           <path
             d="
-              M 520,760 Q 560,810 590,840 T 630,920
-              M 670,720 Q 720,760 710,830
-              M 460,680 Q 490,750 510,820
-              M 820,320 Q 860,280 910,290
+              M 720,1620 Q 770,1710 820,1760 T 870,1880
+              M 920,1560 Q 980,1640 960,1750
+              M 640,1490 Q 690,1590 710,1720
+              M 1080,720 Q 1140,680 1200,700
             "
             fill="none"
             stroke={trailStroke}
@@ -419,20 +527,21 @@ export const LeonidaMapSvg: React.FC<LeonidaMapSvgProps> = ({
           />
 
           {/* MAJOR INTERSTATE HIGHWAYS */}
-          {/* Interstate 97 (North to South Backbone) */}
+          {/* Interstate 97 (North to South Backbone traversing from Mount Kalaga down to Vice City & Keys) */}
           <path
             d="
-              M 1120,78
-              L 1120,220
-              Q 1120,360 1140,460
-              T 1190,640
-              Q 1220,740 1250,860
-              T 1260,980
-              Q 1250,1040 1210,1110
+              M 1120,245
+              L 1120,480
+              Q 1120,680 1140,840
+              T 1240,1150
+              Q 1280,1350 1340,1560
+              T 1420,1780
+              Q 1460,1980 1440,2150
+              Q 1410,2240 1280,2300
             "
             fill="none"
             stroke={highwayStroke}
-            strokeWidth="6"
+            strokeWidth="6.5"
             strokeLinecap="round"
             strokeLinejoin="round"
             filter={`drop-shadow(0 0 6px ${highwayGlow})`}
@@ -441,44 +550,45 @@ export const LeonidaMapSvg: React.FC<LeonidaMapSvgProps> = ({
           {/* Interstate Highway Center Stripe */}
           <path
             d="
-              M 1120,78
-              L 1120,220
-              Q 1120,360 1140,460
-              T 1190,640
-              Q 1220,740 1250,860
-              T 1260,980
-              Q 1250,1040 1210,1110
+              M 1120,245
+              L 1120,480
+              Q 1120,680 1140,840
+              T 1240,1150
+              Q 1280,1350 1340,1560
+              T 1420,1780
+              Q 1460,1980 1440,2150
+              Q 1410,2240 1280,2300
             "
             fill="none"
             stroke="#ffffff"
             strokeWidth="1.2"
-            strokeDasharray="10 8"
-            opacity="0.8"
+            strokeDasharray="12 10"
+            opacity="0.85"
           />
 
           {/* Interstate 95 West Branch (To Port Gellhorn) */}
           <path
             d="
-              M 1120,220
-              Q 940,240 760,250
-              T 480,540
-              L 380,560
+              M 1140,840
+              Q 920,890 740,940
+              T 520,1180
+              L 440,1220
             "
             fill="none"
             stroke={highwayStroke}
-            strokeWidth="5"
+            strokeWidth="5.5"
             strokeLinecap="round"
             strokeLinejoin="round"
             filter={`drop-shadow(0 0 5px ${highwayGlow})`}
           />
 
-          {/* Venetian & Tropicana Causeways (Connecting Downtown to Vice Beach across the Bay) */}
-          {/* North Causeway (Julia Tuttle equivalent) */}
+          {/* Venetian & MacArthur Causeways (Connecting Downtown Vice to Vice Beach) */}
+          {/* North Causeway (Julia Tuttle) */}
           <line
-            x1="1340"
-            y1="460"
-            x2="1630"
-            y2="440"
+            x1="1500"
+            y1="1660"
+            x2="1730"
+            y2="1640"
             stroke={highwayStroke}
             strokeWidth="4.5"
             strokeLinecap="round"
@@ -486,15 +596,15 @@ export const LeonidaMapSvg: React.FC<LeonidaMapSvgProps> = ({
           />
           {/* Venetian Causeway (Via Starfish Island) */}
           <path
-            d="M 1370,550 L 1430,520 L 1520,500 L 1640,520"
+            d="M 1530,1760 L 1590,1730 L 1680,1710 L 1740,1730"
             fill="none"
             stroke={highwayStroke}
             strokeWidth="3.5"
             strokeLinecap="round"
           />
-          {/* South Causeway (MacArthur equivalent to Ocean Dr) */}
+          {/* South Causeway (MacArthur to Ocean Drive) */}
           <path
-            d="M 1360,630 L 1470,620 L 1650,660"
+            d="M 1520,1850 L 1630,1830 L 1750,1870"
             fill="none"
             stroke={highwayStroke}
             strokeWidth="4.5"
@@ -502,229 +612,268 @@ export const LeonidaMapSvg: React.FC<LeonidaMapSvgProps> = ({
             filter={`drop-shadow(0 0 4px ${highwayGlow})`}
           />
           {/* Port Leonida Bridge */}
-          <line x1="1350" y1="780" x2="1440" y2="840" stroke={highwayStroke} strokeWidth="4" strokeLinecap="round" />
+          <line x1="1470" y1="2020" x2="1540" y2="2080" stroke={highwayStroke} strokeWidth="4" strokeLinecap="round" />
 
           {/* Ocean Drive Beachfront Boulevard */}
           <path
             d="
-              M 1630,370
-              C 1655,460 1690,600 1700,750
-              C 1705,840 1685,930 1655,980
+              M 1720,1570
+              C 1750,1690 1790,1860 1800,2030
+              C 1805,2130 1780,2230 1740,2270
             "
             fill="none"
             stroke="#ff3b91"
             strokeWidth="4.5"
             strokeLinecap="round"
-            filter="drop-shadow(0 0 6px rgba(255, 59, 145, 0.5))"
+            filter="drop-shadow(0 0 7px rgba(255, 59, 145, 0.6))"
           />
 
-          {/* Seven-Mile Overseas Viaduct (Keys Highway spanning open ocean!) */}
+          {/* Seven-Mile Overseas Viaduct (Keys Highway extending deep south into the ocean) */}
           <path
             d="
-              M 1210,1110
-              L 1235,1160
-              L 1145,1205
-              L 1090,1235
-              L 1005,1275
-              L 915,1315
-              L 865,1325
+              M 1280,2300
+              L 1250,2350
+              L 1160,2420
+              L 1090,2465
+              L 1005,2510
+              L 905,2565
+              L 815,2615
+              L 720,2670
             "
             fill="none"
             stroke={highwayStroke}
-            strokeWidth="5"
+            strokeWidth="5.5"
             strokeLinecap="round"
             strokeLinejoin="round"
             filter={`drop-shadow(0 0 6px ${highwayGlow})`}
           />
-          {/* Viaduct Pylons over open water spans */}
-          <circle cx="1185" cy="1185" r="3.5" fill="#ffffff" />
-          <circle cx="1120" cy="1220" r="3.5" fill="#ffffff" />
-          <circle cx="1045" cy="1255" r="3.5" fill="#ffffff" />
-          <circle cx="955" cy="1295" r="3.5" fill="#ffffff" />
+          {/* Viaduct Pylons */}
+          <circle cx="1210" cy="2385" r="3.5" fill="#ffffff" />
+          <circle cx="1125" cy="2440" r="3.5" fill="#ffffff" />
+          <circle cx="1045" cy="2490" r="3.5" fill="#ffffff" />
+          <circle cx="955" cy="2540" r="3.5" fill="#ffffff" />
+          <circle cx="860" cy="2590" r="3.5" fill="#ffffff" />
+          <circle cx="765" cy="2645" r="3.5" fill="#ffffff" />
         </g>
       )}
 
-      {/* 8. TACTICAL GRID OVERLAY */}
+      {/* 10. TACTICAL GRID OVERLAY (2000 x 2800) */}
       {showGrid && (
         <g id="grid-overlay">
-          <rect x="0" y="0" width="2000" height="1400" fill="url(#tactical-grid)" />
+          <rect x="0" y="0" width={MAP_WIDTH} height={MAP_HEIGHT} fill="url(#tactical-grid-tall)" />
           {/* Coordinate tick labels along borders */}
-          {Array.from({ length: 10 }).map((_, i) => (
+          {Array.from({ length: 11 }).map((_, i) => (
             <text
               key={`grid-x-${i}`}
               x={i * 200 + 10}
               y={24}
-              fill="rgba(255, 255, 255, 0.25)"
+              fill="rgba(255, 255, 255, 0.28)"
               fontSize="12"
               fontFamily="monospace"
             >
-              {`LON ${(80.1 + i * 0.1).toFixed(1)}°W`}
+              {`LON ${(81.2 - i * 0.1).toFixed(1)}°W`}
             </text>
           ))}
-          {Array.from({ length: 7 }).map((_, i) => (
+          {Array.from({ length: 14 }).map((_, i) => (
             <text
               key={`grid-y-${i}`}
               x={12}
               y={i * 200 + 40}
-              fill="rgba(255, 255, 255, 0.25)"
+              fill="rgba(255, 255, 255, 0.28)"
               fontSize="12"
               fontFamily="monospace"
             >
-              {`LAT ${(25.8 - i * 0.1).toFixed(1)}°N`}
+              {`LAT ${(27.8 - i * 0.2).toFixed(1)}°N`}
             </text>
           ))}
         </g>
       )}
 
-      {/* 9. DISTRICT & GEOGRAPHY LABELS */}
+      {/* 11. DISTRICT & GEOGRAPHY LABELS */}
       {showDistricts && (
         <g id="district-labels" className="select-none">
-          {/* Vice Beach */}
+          {/* MOUNT KALAGA NATIONAL PARK (NORTH) */}
           <text
-            x="1720"
-            y="540"
-            fill="#ff3b91"
-            fontSize="26"
-            fontWeight="700"
-            letterSpacing="6"
+            x="980"
+            y="290"
+            fill="#a855f7"
+            fontSize="30"
+            fontWeight="800"
+            letterSpacing="7"
             textAnchor="middle"
-            transform="rotate(82 1720 540)"
-            filter="drop-shadow(0 0 8px rgba(255, 59, 145, 0.7))"
+            filter="drop-shadow(0 0 10px rgba(168, 85, 247, 0.7))"
           >
-            VICE BEACH
+            MOUNT KALAGA NATIONAL PARK
           </text>
           <text
-            x="1700"
-            y="720"
-            fill="rgba(255, 255, 255, 0.6)"
+            x="980"
+            y="318"
+            fill="rgba(255, 255, 255, 0.65)"
+            fontSize="12"
+            letterSpacing="4"
+            textAnchor="middle"
+          >
+            NORTHERN ALPINE RIDGE · PINE VALLEY · PEAK ELEV 2,840 FT
+          </text>
+
+          {/* AMBROSIA & LAKE AMBROSIA (NORTH-CENTRAL INTERIOR) */}
+          <text
+            x="1110"
+            y="940"
+            fill="#38bdf8"
+            fontSize="26"
+            fontWeight="800"
+            letterSpacing="5"
+            textAnchor="middle"
+            filter="drop-shadow(0 0 8px rgba(56, 189, 248, 0.6))"
+          >
+            LAKE AMBROSIA
+          </text>
+          <text
+            x="1110"
+            y="965"
+            fill="rgba(255, 255, 255, 0.65)"
             fontSize="12"
             letterSpacing="3"
             textAnchor="middle"
-            transform="rotate(82 1700 720)"
           >
-            OCEAN DRIVE DISTRICT
+            FRESHWATER BASIN · DAM & CITRUS BELT
           </text>
 
-          {/* Downtown Vice */}
+          {/* PORT GELLHORN (WEST COAST) */}
           <text
-            x="1340"
-            y="520"
-            fill="#20d9d2"
-            fontSize="30"
+            x="420"
+            y="1140"
+            fill="#38bdf8"
+            fontSize="26"
             fontWeight="800"
             letterSpacing="5"
+            textAnchor="middle"
+            filter="drop-shadow(0 0 8px rgba(56, 189, 248, 0.6))"
+          >
+            PORT GELLHORN
+          </text>
+          <text
+            x="420"
+            y="1165"
+            fill="rgba(255, 255, 255, 0.65)"
+            fontSize="12"
+            letterSpacing="3"
+            textAnchor="middle"
+          >
+            WESTERN COASTAL MARINAS · SUNKEN INLETS
+          </text>
+
+          {/* GRASSRIVERS (SOUTH-CENTRAL INTERIOR) */}
+          <text
+            x="960"
+            y="1700"
+            fill="#10b981"
+            fontSize="34"
+            fontWeight="800"
+            letterSpacing="9"
+            textAnchor="middle"
+            filter="drop-shadow(0 0 10px rgba(16, 185, 129, 0.7))"
+          >
+            GRASSRIVERS
+          </text>
+          <text
+            x="960"
+            y="1730"
+            fill="rgba(255, 255, 255, 0.65)"
+            fontSize="13"
+            letterSpacing="5"
+            textAnchor="middle"
+          >
+            SUBTROPICAL SAWGRASS WETLANDS & ALLIGATOR BAYOUS
+          </text>
+
+          {/* DOWNTOWN VICE (SOUTHEAST) */}
+          <text
+            x="1480"
+            y="1730"
+            fill="#20d9d2"
+            fontSize="32"
+            fontWeight="800"
+            letterSpacing="6"
             textAnchor="middle"
             filter="drop-shadow(0 0 10px rgba(32, 217, 210, 0.7))"
           >
             DOWNTOWN VICE
           </text>
           <text
-            x="1340"
-            y="545"
-            fill="rgba(255, 255, 255, 0.6)"
+            x="1480"
+            y="1758"
+            fill="rgba(255, 255, 255, 0.65)"
             fontSize="13"
             letterSpacing="4"
             textAnchor="middle"
           >
-            BISCAYNE BAY · FINANCIAL
+            BISCAYNE BAY · FINANCIAL SKYLINE
           </text>
 
-          {/* Grassrivers */}
+          {/* VICE BEACH (SOUTHEAST ATLANTIC BARRIER) */}
           <text
-            x="700"
-            y="820"
-            fill="#10b981"
-            fontSize="32"
-            fontWeight="800"
-            letterSpacing="8"
-            textAnchor="middle"
-            filter="drop-shadow(0 0 8px rgba(16, 185, 129, 0.6))"
-          >
-            GRASSRIVERS
-          </text>
-          <text
-            x="700"
-            y="850"
-            fill="rgba(255, 255, 255, 0.6)"
-            fontSize="13"
-            letterSpacing="5"
-            textAnchor="middle"
-          >
-            SUBTROPICAL EVERGLADES & BAYOUS
-          </text>
-
-          {/* Gator Keys */}
-          <text
-            x="1050"
-            y="1200"
-            fill="#ff9b45"
+            x="1830"
+            y="1740"
+            fill="#ff3b91"
             fontSize="28"
             fontWeight="800"
             letterSpacing="6"
             textAnchor="middle"
-            filter="drop-shadow(0 0 8px rgba(255, 155, 69, 0.6))"
+            transform="rotate(82 1830 1740)"
+            filter="drop-shadow(0 0 10px rgba(255, 59, 145, 0.8))"
           >
-            GATOR KEYS
+            VICE BEACH
           </text>
           <text
-            x="1050"
-            y="1225"
-            fill="rgba(255, 255, 255, 0.6)"
+            x="1810"
+            y="1940"
+            fill="rgba(255, 255, 255, 0.65)"
             fontSize="12"
             letterSpacing="3"
             textAnchor="middle"
+            transform="rotate(82 1810 1940)"
           >
-            OVERSEAS VIADUCT · CORAL ATOLLS
+            OCEAN DRIVE STRIP · ATLANTIC SANDS
           </text>
 
-          {/* Port Leonida */}
+          {/* PORT LEONIDA (SOUTHEAST DOCKS) */}
           <text
-            x="1480"
-            y="910"
+            x="1580"
+            y="2140"
             fill="#fbbf24"
-            fontSize="20"
+            fontSize="22"
             fontWeight="700"
             letterSpacing="4"
             textAnchor="middle"
+            filter="drop-shadow(0 0 8px rgba(251, 191, 36, 0.6))"
           >
             PORT LEONIDA
           </text>
 
-          {/* Lake Ambrosia & Kelly County */}
+          {/* LEONIDA KEYS (SOUTH OCEAN ARCHIPELAGO) */}
           <text
-            x="750"
-            y="300"
-            fill="#38bdf8"
-            fontSize="22"
-            fontWeight="700"
-            letterSpacing="4"
-            textAnchor="middle"
-          >
-            LAKE AMBROSIA
-          </text>
-          <text
-            x="850"
-            y="180"
-            fill="#a855f7"
-            fontSize="26"
+            x="1020"
+            y="2440"
+            fill="#ff9b45"
+            fontSize="30"
             fontWeight="800"
-            letterSpacing="6"
+            letterSpacing="7"
             textAnchor="middle"
+            filter="drop-shadow(0 0 10px rgba(255, 155, 69, 0.7))"
           >
-            KELLY COUNTY
+            LEONIDA KEYS
           </text>
-
-          {/* Port Gellhorn */}
           <text
-            x="420"
-            y="520"
-            fill="#38bdf8"
-            fontSize="22"
-            fontWeight="700"
+            x="1020"
+            y="2468"
+            fill="rgba(255, 255, 255, 0.65)"
+            fontSize="13"
             letterSpacing="4"
             textAnchor="middle"
           >
-            PORT GELLHORN
+            OVERSEAS VIADUCT · CORAL ATOLLS · PELICAN KEY
           </text>
         </g>
       )}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Crosshair, Compass } from 'lucide-react';
+import { MAP_WIDTH, MAP_HEIGHT } from '../../constants/map';
 
 interface MinimapRadarProps {
   pan: { x: number; y: number };
@@ -16,25 +17,21 @@ export const MinimapRadar: React.FC<MinimapRadarProps> = ({
   onJumpTo,
   playerPos,
 }) => {
-  // SVG coordinates: 2000 x 1400
-  // Minimap preview dimensions
-  const miniW = 180;
-  const miniH = 126;
+  // Minimap preview dimensions (aspect ratio 1 : 1.4 matching 2000 x 2800)
+  const miniW = 140;
+  const miniH = 196;
 
-  // Calculate current viewport in 2000 x 1400 space
-  // Main map transform: translate(pan.x, pan.y) scale(zoom)
-  // At screen (0, 0): svgX = -pan.x / zoom
-  // At screen (width, height): svgW = viewportSize.width / zoom
-  const viewBoxW = Math.min(2000, viewportSize.width / (zoom || 1));
-  const viewBoxH = Math.min(1400, viewportSize.height / (zoom || 1));
-  const viewBoxX = Math.max(0, Math.min(2000 - viewBoxW, -pan.x / (zoom || 1)));
-  const viewBoxY = Math.max(0, Math.min(1400 - viewBoxH, -pan.y / (zoom || 1)));
+  // Calculate current viewport in MAP_WIDTH x MAP_HEIGHT space
+  const viewBoxW = Math.min(MAP_WIDTH, viewportSize.width / (zoom || 1));
+  const viewBoxH = Math.min(MAP_HEIGHT, viewportSize.height / (zoom || 1));
+  const viewBoxX = Math.max(0, Math.min(MAP_WIDTH - viewBoxW, -pan.x / (zoom || 1)));
+  const viewBoxY = Math.max(0, Math.min(MAP_HEIGHT - viewBoxH, -pan.y / (zoom || 1)));
 
   // Convert to minimap pixel space
-  const rectX = (viewBoxX / 2000) * miniW;
-  const rectY = (viewBoxY / 1400) * miniH;
-  const rectW = Math.max(12, Math.min(miniW, (viewBoxW / 2000) * miniW));
-  const rectH = Math.max(10, Math.min(miniH, (viewBoxH / 1400) * miniH));
+  const rectX = (viewBoxX / MAP_WIDTH) * miniW;
+  const rectY = (viewBoxY / MAP_HEIGHT) * miniH;
+  const rectW = Math.max(12, Math.min(miniW, (viewBoxW / MAP_WIDTH) * miniW));
+  const rectH = Math.max(12, Math.min(miniH, (viewBoxH / MAP_HEIGHT) * miniH));
 
   // Player position in minimap
   const playerMiniX = (playerPos.x / 100) * miniW;
@@ -45,8 +42,8 @@ export const MinimapRadar: React.FC<MinimapRadarProps> = ({
     const clickX = e.clientX - rect.left;
     const clickY = e.clientY - rect.top;
 
-    const targetSvgX = (clickX / miniW) * 2000;
-    const targetSvgY = (clickY / miniH) * 1400;
+    const targetSvgX = (clickX / miniW) * MAP_WIDTH;
+    const targetSvgY = (clickY / miniH) * MAP_HEIGHT;
 
     onJumpTo(targetSvgX, targetSvgY);
   };
@@ -67,35 +64,33 @@ export const MinimapRadar: React.FC<MinimapRadarProps> = ({
       {/* Radar Box */}
       <div
         onClick={handleMinimapClick}
-        className="relative w-[180px] h-[126px] bg-[#101116]/95 backdrop-blur-md rounded-xl border border-slate-800/90 shadow-2xl overflow-hidden cursor-crosshair group hover:border-[#20D9D2]/50 transition-colors"
-        title="Click to jump to region"
+        className="relative w-[140px] h-[196px] bg-[#101116]/95 backdrop-blur-md rounded-xl border border-slate-800/90 shadow-2xl overflow-hidden cursor-crosshair group hover:border-[#20D9D2]/50 transition-colors"
+        title="Click to jump across Leonida"
       >
         {/* Simplified SVG silhouettes */}
-        <svg viewBox="0 0 2000 1400" className="w-full h-full pointer-events-none opacity-80">
+        <svg viewBox="0 0 2000 2800" className="w-full h-full pointer-events-none opacity-85">
           {/* Shallow coastal water */}
           <path
-            d="M 1250,150 C 1450,220 1850,380 1880,720 C 1900,980 1680,1200 1380,1280 C 1120,1350 820,1320 620,1220 Z"
+            d="M 1450,260 C 1650,380 1850,750 1860,1250 C 1870,1650 1960,1850 1920,2150 C 1880,2350 1680,2480 1480,2520 C 1250,2560 980,2720 720,2780 C 540,2810 420,2740 480,2620 C 560,2480 750,2340 880,2220 C 960,2150 920,2020 840,1920 C 720,1780 620,1620 540,1420 C 460,1220 520,950 580,720 C 640,480 950,320 1250,260 Z"
             fill="#11293d"
           />
-          {/* Mainland */}
+          {/* Elongated Mainland */}
           <path
-            d="M 100,320 C 105,230 140,165 220,125 C 320,85 450,90 580,75 C 690,65 770,52 870,55 C 970,58 1070,72 1190,78 C 1310,82 1430,110 1510,150 C 1555,172 1575,210 1550,265 C 1520,320 1480,380 1440,440 C 1390,320 1350,380 1320,440 C 1300,500 1320,540 1360,590 C 1400,640 1420,700 1410,760 C 1390,850 1340,920 1260,980 C 1180,1040 1080,1080 980,1110 C 880,1140 760,1130 680,1090 C 600,1050 540,980 500,900 C 460,820 440,720 400,660 C 360,600 280,570 220,530 C 160,490 120,420 100,320 Z"
+            d="M 180,480 C 190,360 260,270 420,250 C 580,230 840,235 1120,245 C 1340,255 1520,285 1620,380 C 1660,490 1640,650 1600,820 C 1560,980 1520,1140 1510,1300 C 1500,1420 1530,1520 1560,1640 C 1580,1720 1540,1820 1480,1920 C 1440,2000 1420,2100 1360,2180 C 1300,2260 1200,2295 1100,2290 C 960,2280 860,2220 780,2120 C 720,2020 700,1890 680,1750 C 660,1620 580,1520 520,1420 C 480,1360 380,1350 320,1300 C 280,1230 300,1140 360,1080 C 420,1020 520,1040 560,960 C 600,880 560,740 480,640 C 390,560 260,540 180,480 Z"
             fill="#1e293b"
           />
-          {/* Vice Beach */}
-          <path
-            d="M 1660,340 C 1690,440 1730,590 1740,750 C 1745,860 1720,950 1680,1020 C 1660,1010 1640,990 1645,950 C 1660,860 1675,740 1665,600 Z"
-            fill="#ff3b91"
-            opacity="0.6"
-          />
-          {/* Gator Keys */}
-          <path
-            d="M 1220,1110 C 1260,1130 1280,1165 1250,1190 C 1210,1210 1160,1170 1180,1130 Z M 1120,1180 C 1150,1195 1165,1230 1130,1250 Z M 1020,1235 C 1050,1245 1060,1275 1030,1295 Z M 910,1280 C 940,1285 960,1320 930,1345 Z"
-            fill="#ff9b45"
-            opacity="0.6"
-          />
+          {/* Mount Kalaga North */}
+          <path d="M 620,260 C 720,245 920,250 1150,260 C 1280,270 1380,320 1360,420 C 1340,510 1220,580 1100,620 C 980,660 820,640 700,590 Z" fill="#a855f7" opacity="0.35" />
+          {/* Lake Ambrosia */}
+          <ellipse cx="1110" cy="1030" rx="140" ry="110" fill="#11293d" />
+          {/* Port Gellhorn */}
+          <rect x="360" y="1180" width="120" height="130" fill="#38bdf8" opacity="0.4" />
           {/* Grassrivers */}
-          <ellipse cx="700" cy="850" rx="200" ry="160" fill="#10b981" opacity="0.3" />
+          <ellipse cx="980" cy="1750" rx="280" ry="240" fill="#10b981" opacity="0.3" />
+          {/* Vice Beach */}
+          <path d="M 1740,1540 C 1780,1660 1830,1840 1840,2020 C 1845,2140 1820,2240 1770,2310 Z" fill="#ff3b91" opacity="0.65" />
+          {/* Leonida Keys */}
+          <path d="M 1280,2300 L 1150,2400 L 1010,2485 L 870,2560 L 720,2640" stroke="#ff9b45" strokeWidth="24" strokeLinecap="round" opacity="0.7" fill="none" />
         </svg>
 
         {/* Viewport Box Indicator */}

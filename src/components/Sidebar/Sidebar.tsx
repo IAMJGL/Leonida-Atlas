@@ -175,12 +175,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div className="grid grid-cols-3 gap-1 bg-[#191B24] p-1 rounded-lg border border-slate-800 text-[11px] font-medium">
               {(['all', 'undiscovered', 'discovered'] as DiscoveryFilter[]).map((filter) => (
                 <button
+                  type="button"
                   key={filter}
                   onClick={() => {
                     onChangeDiscoveryFilter(filter);
                     playSound('click', soundEffects);
                   }}
-                  className={`py-1 rounded-md transition-colors capitalize ${
+                  className={`py-1 rounded-md transition-colors capitalize cursor-pointer ${
                     discoveryFilter === filter
                       ? 'bg-[#272a38] text-white shadow-sm font-semibold'
                       : 'text-slate-400 hover:text-slate-200'
