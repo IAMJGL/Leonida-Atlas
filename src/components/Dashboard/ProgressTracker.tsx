@@ -32,20 +32,22 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
       <div className="relative w-full max-w-4xl max-h-[90vh] bg-[#14161f] border border-slate-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="px-6 py-4 bg-[#101116] border-b border-slate-800 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#FF3B91] to-[#FF9B45] flex items-center justify-center shadow-lg">
-              <Trophy className="w-5 h-5 text-white" />
+        <div className="px-4 sm:px-6 py-3 sm:py-4 bg-[#101116] border-b border-slate-800 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-[#FF3B91] to-[#FF9B45] flex items-center justify-center shadow-lg shrink-0">
+              <Trophy className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
-            <div>
-              <h2 className="text-base font-bold text-white tracking-tight flex items-center gap-2">
-                Leonida Completion Tracker
-                <span className="text-[10px] font-mono uppercase px-2 py-0.5 bg-slate-800 text-[#20D9D2] rounded border border-slate-700">
-                  Profile Rank 14
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                <h2 className="text-sm sm:text-base font-bold text-white tracking-tight truncate">
+                  Leonida Completion
+                </h2>
+                <span className="text-[10px] font-mono uppercase px-1.5 py-0.2 bg-slate-800 text-[#20D9D2] rounded border border-slate-700">
+                  Rank 14
                 </span>
-              </h2>
-              <p className="text-xs text-slate-400">
-                Track your open-world discovery across all Leonida sectors
+              </div>
+              <p className="text-[11px] sm:text-xs text-slate-400 truncate">
+                Track discovery across all sectors
               </p>
             </div>
           </div>
@@ -55,7 +57,7 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
               onClose();
               playSound('click', soundEffects);
             }}
-            className="w-8 h-8 rounded-lg bg-[#191B24] hover:bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-colors"
+            className="w-8 h-8 rounded-lg bg-[#191B24] hover:bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-colors shrink-0 cursor-pointer"
             aria-label="Close dashboard"
           >
             <X className="w-4 h-4" />

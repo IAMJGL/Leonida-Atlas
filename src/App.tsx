@@ -16,6 +16,7 @@ import {
   ProgressSummary,
 } from './types';
 import { playSound } from './utils/audio';
+import { Layers } from 'lucide-react';
 
 const STORAGE_KEY_DISCOVERED = 'leonida_atlas_discovered_ids_v1';
 const STORAGE_KEY_NOTES = 'leonida_atlas_user_notes_v1';
@@ -70,6 +71,7 @@ export default function App() {
 
   // 2. Navigation & Filter State
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<SidebarTab>('locations');
   const [activeCategories, setActiveCategories] = useState<Record<LocationCategory, boolean>>(DEFAULT_CATEGORIES);
   const [discoveryFilter, setDiscoveryFilter] = useState<DiscoveryFilter>('all');
@@ -313,11 +315,12 @@ export default function App() {
         progress={progressSummary}
         onOpenDashboard={() => setIsDashboardOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
+        onToggleMobileMenu={() => setIsMobileMenuOpen((prev) => !prev)}
       />
 
       {/* 2. MAIN LAYOUT: SIDEBAR + INTERACTIVE MAP */}
       <div className="relative flex-1 flex overflow-hidden">
-        {/* Collapsible Left Sidebar */}
+        {/* Collapsible Left Sidebar (Docked on desktop, drawer on mobile) */}
         <Sidebar
           isCollapsed={isSidebarCollapsed}
           onToggleCollapse={() => setIsSidebarCollapsed((prev) => !prev)}
@@ -332,6 +335,8 @@ export default function App() {
           onChangeRegion={setSelectedRegion}
           categoryStats={categoryStats}
           soundEffects={settings.soundEffects}
+          isMobileOpen={isMobileMenuOpen}
+          onCloseMobile={() => setIsMobileMenuOpen(false)}
         />
 
         {/* Interactive Open-World Map Canvas */}
@@ -348,7 +353,26 @@ export default function App() {
             onSetWaypoint={setWaypoint}
           />
 
-          {/* Location Detail Panel (when marker selected) */}
+          {/* Floating Mobile Quick Directory Trigger (When no marker panel is open) */}
+          {!selectedLocation && (
+            <button
+              type="button"
+              onClick={() => {
+                setIsMobileMenuOpen(true);
+                playSound('toggle', settings.soundEffects);
+              }}
+              className="md:hidden absolute bottom-4 left-4 z-20 flex items-center gap-2 px-3.5 py-2.5 bg-[#191B24]/95 hover:bg-[#252836] border border-slate-700/80 rounded-xl text-white shadow-xl backdrop-blur-md transition-all active:scale-95 cursor-pointer"
+              aria-label="Open Directory and Filter Menu"
+            >
+              <Layers className="w-4 h-4 text-[#20D9D2]" />
+              <span className="text-xs font-bold tracking-wide">Directory</span>
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
+                {filteredLocations.length}
+              </span>
+            </button>
+          )}
+
+          {/* Location Detail Panel (when marker selected - bottom sheet on mobile, top-left on desktop) */}
           {selectedLocation && (
             <LocationDetailPanel
               location={selectedLocation}

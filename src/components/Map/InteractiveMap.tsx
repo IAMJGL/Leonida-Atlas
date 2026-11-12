@@ -139,6 +139,53 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
     setIsDragging(false);
   };
 
+  // Mobile Touch pan and pinch-zoom handlers
+  const touchStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const touchDistRef = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      touchDistRef.current = null;
+      touchStartRef.current = {
+        x: e.touches[0].clientX - pan.x,
+        y: e.touches[0].clientY - pan.y,
+      };
+      setIsDragging(true);
+    } else if (e.touches.length === 2) {
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      touchDistRef.current = dist;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 1 && !touchDistRef.current) {
+      setPan({
+        x: e.touches[0].clientX - touchStartRef.current.x,
+        y: e.touches[0].clientY - touchStartRef.current.y,
+      });
+    } else if (e.touches.length === 2) {
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      if (touchDistRef.current && touchDistRef.current > 0) {
+        const factor = dist / touchDistRef.current;
+        const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+        handleZoom(factor, midX, midY);
+      }
+      touchDistRef.current = dist;
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+    touchDistRef.current = null;
+  };
+
   // Center on specific map SVG coordinate
   const panToCoordinate = useCallback(
     (targetSvgX: number, targetSvgY: number, targetZoom?: number) => {
@@ -192,7 +239,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full h-full bg-[#101116] overflow-hidden select-none ${
+      className={`relative w-full h-full bg-[#101116] overflow-hidden select-none touch-none ${
         isDragging ? 'cursor-grabbing' : 'cursor-grab'
       }`}
       onWheel={handleWheel}
@@ -200,6 +247,10 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
     >
       {/* MAP SVG CANVAS (2000 x 2800) */}
       <svg
@@ -360,13 +411,17 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
 
       {/* ACTIVE WAYPOINT HUD BANNER (When a waypoint is set) */}
       {waypoint && (
-        <div className="absolute bottom-6 left-6 z-20 flex items-center gap-3 px-3.5 py-2 bg-[#101116]/95 backdrop-blur-md rounded-xl border border-[#20D9D2]/40 shadow-2xl pointer-events-auto">
-          <div className="w-2.5 h-2.5 rounded-full bg-[#20D9D2] animate-ping" />
-          <div className="flex flex-col">
-            <span className="text-[10px] font-mono tracking-wider text-[#20D9D2] uppercase">
+        <div
+          className={`absolute left-4 sm:left-6 z-20 flex items-center gap-2.5 sm:gap-3 px-3 sm:px-3.5 py-1.5 sm:py-2 bg-[#101116]/95 backdrop-blur-md rounded-xl border border-[#20D9D2]/40 shadow-2xl pointer-events-auto transition-all ${
+            selectedLocation ? 'bottom-[62vh] sm:bottom-6' : 'bottom-4 sm:bottom-6'
+          }`}
+        >
+          <div className="w-2.5 h-2.5 rounded-full bg-[#20D9D2] animate-ping shrink-0" />
+          <div className="flex flex-col min-w-0">
+            <span className="text-[9px] sm:text-[10px] font-mono tracking-wider text-[#20D9D2] uppercase truncate">
               GPS Objective Waypoint
             </span>
-            <span className="text-xs font-semibold text-white">
+            <span className="text-xs font-semibold text-white truncate max-w-[180px] sm:max-w-xs">
               {waypoint.name || 'Custom Waypoint'} · {calculateDistance(waypoint.x, waypoint.y)}
             </span>
           </div>
@@ -375,25 +430,27 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
               onSetWaypoint(null);
               playSound('toggle', settings.soundEffects);
             }}
-            className="ml-2 px-2 py-0.5 text-[11px] bg-[#191B24] hover:bg-rose-950/60 text-slate-300 hover:text-rose-400 border border-slate-700 rounded-md transition-colors"
+            className="ml-1 sm:ml-2 px-2 py-0.5 text-[10px] sm:text-[11px] bg-[#191B24] hover:bg-rose-950/60 text-slate-300 hover:text-rose-400 border border-slate-700 rounded-md transition-colors shrink-0"
           >
             Clear
           </button>
         </div>
       )}
 
-      {/* MINIMAP RADAR HUD (Bottom Right) */}
-      <MinimapRadar
-        pan={pan}
-        zoom={zoom}
-        viewportSize={viewportSize}
-        onJumpTo={(tx, ty) => panToCoordinate(tx, ty)}
-        playerPos={playerPos}
-      />
+      {/* MINIMAP RADAR HUD (Bottom Right - hidden on mobile when bottom sheet is open) */}
+      <div className={selectedLocation ? 'hidden sm:block' : 'block'}>
+        <MinimapRadar
+          pan={pan}
+          zoom={zoom}
+          viewportSize={viewportSize}
+          onJumpTo={(tx, ty) => panToCoordinate(tx, ty)}
+          playerPos={playerPos}
+        />
+      </div>
 
       {/* SAMPLE DATA WATERMARK BANNER (Clear fan-made disclaimer) */}
-      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 pointer-events-none opacity-40 hover:opacity-100 transition-opacity">
-        <span className="text-[10px] font-mono text-slate-400 tracking-wide">
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 pointer-events-none opacity-40 hover:opacity-100 transition-opacity hidden sm:block">
+        <span className="text-[10px] font-mono text-slate-400 tracking-wide whitespace-nowrap">
           Independent Fan Concept · Fictional Leonida Sample Coordinates · Not affiliated with Rockstar Games
         </span>
       </div>

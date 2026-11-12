@@ -12,6 +12,7 @@ import {
   Radar,
   BarChart3,
   Sparkles,
+  Menu,
 } from 'lucide-react';
 import { LocationItem, MapSettings, MapStyleMode, ProgressSummary } from '../../types';
 import { CATEGORIES } from '../../data/locations';
@@ -27,6 +28,7 @@ interface HeaderProps {
   progress: ProgressSummary;
   onOpenDashboard: () => void;
   onOpenSettings: () => void;
+  onToggleMobileMenu?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -39,6 +41,7 @@ export const Header: React.FC<HeaderProps> = ({
   progress,
   onOpenDashboard,
   onOpenSettings,
+  onToggleMobileMenu,
 }) => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const searchContainerRef = useRef<HTMLDivElement>(null);
@@ -74,20 +77,36 @@ export const Header: React.FC<HeaderProps> = ({
   ];
 
   return (
-    <header className="relative z-30 h-14 bg-[#101116] border-b border-slate-800/90 px-4 flex items-center justify-between gap-4">
-      {/* ZONE 1: BRAND LOGO */}
-      <div className="flex items-center gap-3 shrink-0">
+    <header className="relative z-30 h-14 bg-[#101116] border-b border-slate-800/90 px-3 sm:px-4 flex items-center justify-between gap-2 sm:gap-4">
+      {/* ZONE 1: BRAND LOGO & MOBILE MENU TOGGLE */}
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        {/* Mobile menu trigger */}
+        {onToggleMobileMenu && (
+          <button
+            type="button"
+            onClick={() => {
+              onToggleMobileMenu();
+              playSound('click', settings.soundEffects);
+            }}
+            className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-[#191B24] border border-slate-700/80 text-slate-300 hover:text-white hover:bg-[#252836] transition-colors cursor-pointer"
+            aria-label="Open Directory Menu"
+            title="Open Directory Menu"
+          >
+            <Menu className="w-4 h-4 text-[#20D9D2]" />
+          </button>
+        )}
+
         <div className="flex items-center gap-2">
           {/* Neon Palm / Compass insignia */}
-          <div className="relative w-8 h-8 rounded-lg bg-gradient-to-br from-[#FF3B91] via-[#FF9B45] to-[#20D9D2] p-[1.5px] shadow-[0_0_12px_rgba(255,59,145,0.4)]">
+          <div className="relative w-8 h-8 rounded-lg bg-gradient-to-br from-[#FF3B91] via-[#FF9B45] to-[#20D9D2] p-[1.5px] shadow-[0_0_12px_rgba(255,59,145,0.4)] shrink-0">
             <div className="w-full h-full bg-[#101116] rounded-[7px] flex items-center justify-center">
               <Compass className="w-4 h-4 text-[#20D9D2]" />
             </div>
           </div>
 
           <div className="flex flex-col">
-            <div className="flex items-center gap-2">
-              <span className="font-extrabold text-base tracking-tight text-white whitespace-nowrap">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="font-extrabold text-sm sm:text-base tracking-tight text-white whitespace-nowrap">
                 LEONIDA <span className="text-[#FF3B91]">ATLAS</span>
               </span>
               <span className="hidden sm:inline-block text-[10px] uppercase font-mono px-1.5 py-0.2 bg-slate-800/80 text-[#20D9D2] rounded border border-slate-700/60">
@@ -99,16 +118,16 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* ZONE 2: SEARCH FIELD */}
-      <div ref={searchContainerRef} className="relative flex-1 max-w-md">
+      <div ref={searchContainerRef} className="relative flex-1 min-w-[120px] max-w-md">
         <div className="relative flex items-center">
-          <Search className="absolute left-3 w-4 h-4 text-slate-400 pointer-events-none" />
+          <Search className="absolute left-2.5 sm:left-3 w-4 h-4 text-slate-400 pointer-events-none" />
           <input
             type="text"
-            placeholder="Search locations, missions, vehicles, vinyls..."
+            placeholder="Search coordinates..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             onFocus={() => setIsSearchFocused(true)}
-            className="w-full h-9 pl-9 pr-8 bg-[#191B24] border border-slate-700/80 rounded-lg text-xs text-white placeholder-slate-400 focus:outline-none focus:border-[#20D9D2] focus:ring-1 focus:ring-[#20D9D2]/30 transition-all"
+            className="w-full h-9 pl-8 sm:pl-9 pr-7 sm:pr-8 bg-[#191B24] border border-slate-700/80 rounded-lg text-xs text-white placeholder-slate-400 focus:outline-none focus:border-[#20D9D2] focus:ring-1 focus:ring-[#20D9D2]/30 transition-all"
           />
           {searchQuery && (
             <button

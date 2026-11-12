@@ -83,62 +83,84 @@ export const LocationDetailPanel: React.FC<LocationDetailPanelProps> = ({
   };
 
   return (
-    <div className="absolute top-4 left-4 sm:left-6 z-20 w-[92vw] sm:w-[380px] max-h-[calc(100vh-100px)] bg-[#191B24]/95 backdrop-blur-xl border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col pointer-events-auto transition-all animate-in fade-in slide-in-from-left-4 duration-200">
-      {/* Top Banner / Image Area */}
-      <div className="relative h-44 bg-[#101116] overflow-hidden shrink-0">
-        {location.imageUrl ? (
-          <img
-            src={location.imageUrl}
-            alt={location.name}
-            referrerPolicy="no-referrer"
-            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-          />
-        ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center p-6 bg-gradient-to-br from-[#191B24] to-[#101116]">
-            <div
-              className="w-12 h-12 rounded-xl flex items-center justify-center mb-2 shadow-lg"
-              style={{ backgroundColor: `${categoryMeta.color}25`, border: `1.5px solid ${categoryMeta.color}` }}
-            >
-              <span className="text-xl font-bold" style={{ color: categoryMeta.color }}>
-                {location.name.charAt(0)}
-              </span>
-            </div>
-            <span className="text-xs font-mono text-slate-400">{location.regionName}</span>
-          </div>
-        )}
+    <>
+      {/* Mobile tap-away backdrop above the bottom sheet to quickly return to map */}
+      <div
+        className="fixed inset-x-0 top-0 bottom-[60vh] z-25 sm:hidden"
+        onClick={() => {
+          onClose();
+          playSound('click', soundEffects);
+        }}
+        aria-hidden="true"
+      />
 
-        {/* Gradient Scrim */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#191B24] via-black/40 to-transparent" />
-
-        {/* Close Button */}
-        <button
-          onClick={() => {
-            onClose();
-            playSound('click', soundEffects);
-          }}
-          className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-colors"
-          aria-label="Close location panel"
-        >
-          <X className="w-4 h-4" />
-        </button>
-
-        {/* Category Tag (Zero-pill discipline: unboxed clean text with subtle separator) */}
-        <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-xs font-medium">
-          <div className="flex items-center gap-1.5 drop-shadow">
-            <span
-              className="w-2.5 h-2.5 rounded-full shrink-0 shadow-[0_0_8px_currentColor]"
-              style={{ backgroundColor: categoryMeta.color, color: categoryMeta.color }}
-            />
-            <span className="font-semibold text-white tracking-wide">{categoryMeta.label}</span>
-            <span className="text-slate-400">·</span>
-            <span className="text-slate-300">{location.subCategory}</span>
-          </div>
-
-          <span className="text-[11px] font-mono text-slate-300 drop-shadow">
-            {location.regionName}
-          </span>
+      {/* Main Location Detail Panel: Bottom sheet on mobile (< sm), floating panel on desktop (sm+) */}
+      <div
+        className="fixed inset-x-0 bottom-0 z-30 max-h-[60vh] sm:max-h-[calc(100vh-100px)] rounded-t-2xl sm:rounded-2xl border-t sm:border border-slate-700/80 bg-[#191B24]/98 sm:bg-[#191B24]/95 backdrop-blur-xl shadow-[0_-12px_40px_rgba(0,0,0,0.85)] sm:shadow-2xl overflow-hidden flex flex-col pointer-events-auto transition-transform sm:transition-all animate-in slide-in-from-bottom duration-250 sm:animate-in sm:fade-in sm:slide-in-from-left-4 sm:absolute sm:inset-auto sm:top-4 sm:left-6 sm:w-[380px]"
+        role="dialog"
+        aria-label={`Details for ${location.name}`}
+      >
+        {/* Mobile Drag Handle Indicator */}
+        <div className="sm:hidden pt-2 pb-0.5 flex justify-center shrink-0 bg-[#101116]/80">
+          <div className="w-10 h-1 bg-slate-600/70 rounded-full" />
         </div>
-      </div>
+
+        {/* Top Banner / Image Area */}
+        <div className="relative h-28 sm:h-44 bg-[#101116] overflow-hidden shrink-0">
+          {location.imageUrl ? (
+            <img
+              src={location.imageUrl}
+              alt={location.name}
+              referrerPolicy="no-referrer"
+              className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+            />
+          ) : (
+            <div className="w-full h-full flex flex-col items-center justify-center p-4 sm:p-6 bg-gradient-to-br from-[#191B24] to-[#101116]">
+              <div
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center mb-1 sm:mb-2 shadow-lg"
+                style={{ backgroundColor: `${categoryMeta.color}25`, border: `1.5px solid ${categoryMeta.color}` }}
+              >
+                <span className="text-lg sm:text-xl font-bold" style={{ color: categoryMeta.color }}>
+                  {location.name.charAt(0)}
+                </span>
+              </div>
+              <span className="text-[11px] sm:text-xs font-mono text-slate-400">{location.regionName}</span>
+            </div>
+          )}
+
+          {/* Gradient Scrim */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#191B24] via-black/40 to-transparent" />
+
+          {/* Prominent Close Button */}
+          <button
+            onClick={() => {
+              onClose();
+              playSound('click', soundEffects);
+            }}
+            className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-8 h-8 rounded-full bg-black/70 hover:bg-black text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-colors z-20 cursor-pointer active:scale-95"
+            aria-label="Close location panel and return to map"
+            title="Close"
+          >
+            <X className="w-4 h-4" />
+          </button>
+
+          {/* Category Tag (Zero-pill discipline: unboxed clean text with subtle separator) */}
+          <div className="absolute bottom-2.5 sm:bottom-3 left-3.5 sm:left-4 right-3.5 sm:right-4 flex items-center justify-between text-xs font-medium">
+            <div className="flex items-center gap-1.5 drop-shadow">
+              <span
+                className="w-2.5 h-2.5 rounded-full shrink-0 shadow-[0_0_8px_currentColor]"
+                style={{ backgroundColor: categoryMeta.color, color: categoryMeta.color }}
+              />
+              <span className="font-semibold text-white tracking-wide text-xs">{categoryMeta.label}</span>
+              <span className="text-slate-400">·</span>
+              <span className="text-slate-300 text-xs">{location.subCategory}</span>
+            </div>
+
+            <span className="text-[10px] sm:text-[11px] font-mono text-slate-300 drop-shadow">
+              {location.regionName}
+            </span>
+          </div>
+        </div>
 
       {/* Main Content Area */}
       <div className="p-4 space-y-4 overflow-y-auto flex-1">
@@ -325,5 +347,6 @@ export const LocationDetailPanel: React.FC<LocationDetailPanelProps> = ({
         </div>
       </div>
     </div>
-  );
+  </>
+);
 };
