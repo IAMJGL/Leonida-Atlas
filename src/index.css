@@ -18,16 +18,16 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #101116;
+  background: #171426;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #272a38;
+  background: #392344;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3b3f54;
+  background: #FF5CBA;
 }
 
 /* Radar pulse animation */

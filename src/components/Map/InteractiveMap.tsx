@@ -239,7 +239,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full h-full bg-[#101116] overflow-hidden select-none touch-none ${
+      className={`relative w-full h-full bg-[#171426] overflow-hidden select-none touch-none ${
         isDragging ? 'cursor-grabbing' : 'cursor-grab'
       }`}
       onWheel={handleWheel}
@@ -279,10 +279,10 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
               y1={playerSvgY}
               x2={waypointSvgX}
               y2={waypointSvgY}
-              stroke="#20D9D2"
+              stroke="#42CFC3"
               strokeWidth="3.5"
               strokeDasharray="10 8"
-              opacity="0.85"
+              opacity="0.9"
             >
               <animate
                 attributeName="stroke-dashoffset"
@@ -292,12 +292,12 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
               />
             </line>
 
-            {/* Glowing Waypoint Target Pillar */}
-            <circle cx={waypointSvgX} cy={waypointSvgY} r="18" fill="rgba(32, 217, 210, 0.25)" />
-            <circle cx={waypointSvgX} cy={waypointSvgY} r="8" fill="#20D9D2" />
+            {/* Waypoint Target Pillar */}
+            <circle cx={waypointSvgX} cy={waypointSvgY} r="18" fill="rgba(66, 207, 195, 0.25)" />
+            <circle cx={waypointSvgX} cy={waypointSvgY} r="8" fill="#42CFC3" />
             <polygon
               points={`${waypointSvgX},${waypointSvgY - 45} ${waypointSvgX - 12},${waypointSvgY - 65} ${waypointSvgX + 12},${waypointSvgY - 65}`}
-              fill="#20D9D2"
+              fill="#42CFC3"
             />
           </g>
         )}
@@ -305,21 +305,21 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         {/* PLAYER POSITION MARKER */}
         <g transform={`translate(${playerSvgX}, ${playerSvgY})`} className="pointer-events-none">
           {/* Radar ping wave */}
-          <circle cx="0" cy="0" r="22" fill="none" stroke="#20D9D2" strokeWidth="2" opacity="0.6">
-            <animate attributeName="r" values="8;32" dur="2s" repeatCount="indefinite" />
-            <animate attributeName="opacity" values="0.8;0" dur="2s" repeatCount="indefinite" />
+          <circle cx="0" cy="0" r="22" fill="none" stroke="#42CFC3" strokeWidth="2.5" opacity="0.8">
+            <animate attributeName="r" values="8;34" dur="2s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="0.9;0" dur="2s" repeatCount="indefinite" />
           </circle>
 
           {/* Directional FOV Cone facing East (towards Atlantic) */}
           <path
             d="M 0,0 L 28,-14 A 32 32 0 0 1 28,14 Z"
-            fill="rgba(32, 217, 210, 0.25)"
-            stroke="#20D9D2"
-            strokeWidth="1.2"
+            fill="rgba(66, 207, 195, 0.22)"
+            stroke="#42CFC3"
+            strokeWidth="1.4"
           />
 
           {/* Player core dot */}
-          <circle cx="0" cy="0" r="6" fill="#20D9D2" stroke="#ffffff" strokeWidth="2" />
+          <circle cx="0" cy="0" r="6" fill="#42CFC3" stroke="#FFF0E8" strokeWidth="2" />
         </g>
 
         {/* LOCATION MARKERS LAYER */}
@@ -342,7 +342,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         {/* Zoom In */}
         <button
           onClick={() => handleZoom(1.28)}
-          className="w-10 h-10 flex items-center justify-center bg-[#191B24]/90 hover:bg-[#252836] active:bg-[#2e3244] border border-slate-700/80 rounded-lg text-white shadow-xl backdrop-blur-md transition-colors"
+          className="w-10 h-10 flex items-center justify-center bg-[#171426]/90 hover:bg-[#392344] active:bg-[#492D57] border border-[#392344] hover:border-[#FF5CBA]/60 rounded-lg text-[#FFF0E8] shadow-xl backdrop-blur-md transition-colors cursor-pointer"
           title="Zoom In"
           aria-label="Zoom in"
         >
@@ -350,14 +350,14 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         </button>
 
         {/* Zoom Level Indicator */}
-        <div className="w-10 py-1 bg-[#101116]/90 border border-slate-800 rounded-md text-[10px] font-mono text-center text-slate-300 tabular-nums">
+        <div className="w-10 py-1 bg-[#171426]/90 border border-[#392344] rounded-md text-[10px] font-mono text-center text-[#42CFC3] font-bold tabular-nums">
           {Math.round(zoom * 100)}%
         </div>
 
         {/* Zoom Out */}
         <button
           onClick={() => handleZoom(0.78)}
-          className="w-10 h-10 flex items-center justify-center bg-[#191B24]/90 hover:bg-[#252836] active:bg-[#2e3244] border border-slate-700/80 rounded-lg text-white shadow-xl backdrop-blur-md transition-colors"
+          className="w-10 h-10 flex items-center justify-center bg-[#171426]/90 hover:bg-[#392344] active:bg-[#492D57] border border-[#392344] hover:border-[#FF5CBA]/60 rounded-lg text-[#FFF0E8] shadow-xl backdrop-blur-md transition-colors cursor-pointer"
           title="Zoom Out (Down to 20%)"
           aria-label="Zoom out"
         >
@@ -367,7 +367,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         {/* Fit Entire State (Full Map) */}
         <button
           onClick={resetMapPosition}
-          className="w-10 h-10 flex items-center justify-center bg-[#191B24]/90 hover:bg-[#252836] active:bg-[#2e3244] border border-slate-700/80 rounded-lg text-[#20D9D2] shadow-xl backdrop-blur-md transition-colors"
+          className="w-10 h-10 flex items-center justify-center bg-[#171426]/90 hover:bg-[#392344] active:bg-[#492D57] border border-[#392344] hover:border-[#42CFC3]/70 rounded-lg text-[#42CFC3] shadow-xl backdrop-blur-md transition-colors cursor-pointer"
           title="Fit Full State (Mount Kalaga to Leonida Keys)"
           aria-label="Fit entire state in view"
         >
@@ -377,7 +377,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         {/* Focus Vice Metro North */}
         <button
           onClick={() => panToCoordinate(1500, 1780, 1.3)}
-          className="w-10 h-10 flex items-center justify-center bg-[#191B24]/90 hover:bg-[#252836] border border-slate-700/80 rounded-lg text-[#FF3B91] shadow-xl backdrop-blur-md transition-colors"
+          className="w-10 h-10 flex items-center justify-center bg-[#171426]/90 hover:bg-[#392344] border border-[#392344] hover:border-[#FF5CBA]/70 rounded-lg text-[#FF5CBA] shadow-xl backdrop-blur-md transition-colors cursor-pointer"
           title="Focus Vice City Downtown"
           aria-label="Focus Vice City"
         >
@@ -386,9 +386,9 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
       </div>
 
       {/* REGION QUICK JUMP STRIP (Top Left Floating) */}
-      <div className="absolute top-4 left-4 z-20 hidden md:flex items-center gap-1.5 p-1.5 bg-[#101116]/85 backdrop-blur-md rounded-xl border border-slate-800 shadow-xl pointer-events-auto">
-        <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 px-2 flex items-center gap-1">
-          <MapPin className="w-3 h-3 text-[#20D9D2]" />
+      <div className="absolute top-4 left-4 z-20 hidden md:flex items-center gap-1.5 p-1.5 bg-[#171426]/90 backdrop-blur-md rounded-xl border border-[#392344] shadow-xl pointer-events-auto">
+        <span className="text-[11px] font-mono uppercase tracking-wider text-[#FFAD83] px-2 flex items-center gap-1 font-semibold">
+          <MapPin className="w-3 h-3 text-[#FF5CBA]" />
           <span>Sectors:</span>
         </span>
         {[
@@ -402,7 +402,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
           <button
             key={r.id}
             onClick={() => handleJumpToRegion(r.id)}
-            className="px-2.5 py-1 text-xs font-medium rounded-lg text-slate-300 hover:text-white hover:bg-[#191B24] transition-colors whitespace-nowrap"
+            className="px-2.5 py-1 text-xs font-semibold rounded-lg text-[#FFF0E8]/80 hover:text-[#FFF0E8] hover:bg-[#392344] transition-colors whitespace-nowrap cursor-pointer"
           >
             {r.name.split('&')[0].trim()}
           </button>
@@ -412,16 +412,16 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
       {/* ACTIVE WAYPOINT HUD BANNER (When a waypoint is set) */}
       {waypoint && (
         <div
-          className={`absolute left-4 sm:left-6 z-20 flex items-center gap-2.5 sm:gap-3 px-3 sm:px-3.5 py-1.5 sm:py-2 bg-[#101116]/95 backdrop-blur-md rounded-xl border border-[#20D9D2]/40 shadow-2xl pointer-events-auto transition-all ${
+          className={`absolute left-4 sm:left-6 z-20 flex items-center gap-2.5 sm:gap-3 px-3 sm:px-3.5 py-1.5 sm:py-2 bg-[#171426]/95 backdrop-blur-md rounded-xl border border-[#392344] shadow-xl pointer-events-auto transition-all ${
             selectedLocation ? 'bottom-[62vh] sm:bottom-6' : 'bottom-4 sm:bottom-6'
           }`}
         >
-          <div className="w-2.5 h-2.5 rounded-full bg-[#20D9D2] animate-ping shrink-0" />
+          <div className="w-2.5 h-2.5 rounded-full bg-[#42CFC3] animate-ping shrink-0" />
           <div className="flex flex-col min-w-0">
-            <span className="text-[9px] sm:text-[10px] font-mono tracking-wider text-[#20D9D2] uppercase truncate">
+            <span className="text-[9px] sm:text-[10px] font-mono tracking-wider text-[#42CFC3] uppercase truncate font-bold">
               GPS Objective Waypoint
             </span>
-            <span className="text-xs font-semibold text-white truncate max-w-[180px] sm:max-w-xs">
+            <span className="text-xs font-semibold text-[#FFF0E8] truncate max-w-[180px] sm:max-w-xs">
               {waypoint.name || 'Custom Waypoint'} · {calculateDistance(waypoint.x, waypoint.y)}
             </span>
           </div>
@@ -430,7 +430,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
               onSetWaypoint(null);
               playSound('toggle', settings.soundEffects);
             }}
-            className="ml-1 sm:ml-2 px-2 py-0.5 text-[10px] sm:text-[11px] bg-[#191B24] hover:bg-rose-950/60 text-slate-300 hover:text-rose-400 border border-slate-700 rounded-md transition-colors shrink-0"
+            className="ml-1 sm:ml-2 px-2 py-0.5 text-[10px] sm:text-[11px] bg-[#221933] hover:bg-[#392344] text-[#FFF0E8]/75 hover:text-[#FF8FA3] border border-[#392344] rounded-md transition-colors shrink-0 cursor-pointer"
           >
             Clear
           </button>
@@ -450,7 +450,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
 
       {/* SAMPLE DATA WATERMARK BANNER (Clear fan-made disclaimer) */}
       <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 pointer-events-none opacity-40 hover:opacity-100 transition-opacity hidden sm:block">
-        <span className="text-[10px] font-mono text-slate-400 tracking-wide whitespace-nowrap">
+        <span className="text-[10px] font-mono text-[#FFF0E8]/50 tracking-wide whitespace-nowrap">
           Independent Fan Concept · Fictional Leonida Sample Coordinates · Not affiliated with Rockstar Games
         </span>
       </div>

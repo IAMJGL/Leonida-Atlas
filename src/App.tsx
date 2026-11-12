@@ -297,7 +297,7 @@ export default function App() {
   }, [locations]);
 
   return (
-    <div className="flex flex-col h-screen w-screen bg-[#101116] text-slate-100 overflow-hidden font-sans">
+    <div className="flex flex-col h-screen w-screen bg-[#171426] text-[#FFF0E8] overflow-hidden font-sans">
       {/* 1. TOP NAVIGATION BAR */}
       <Header
         locations={locations}
@@ -340,7 +340,7 @@ export default function App() {
         />
 
         {/* Interactive Open-World Map Canvas */}
-        <main className="relative flex-1 h-full overflow-hidden bg-[#101116]">
+        <main className="relative flex-1 h-full overflow-hidden bg-[#171426]">
           <InteractiveMap
             locations={filteredLocations}
             selectedLocation={selectedLocation}
@@ -361,12 +361,12 @@ export default function App() {
                 setIsMobileMenuOpen(true);
                 playSound('toggle', settings.soundEffects);
               }}
-              className="md:hidden absolute bottom-4 left-4 z-20 flex items-center gap-2 px-3.5 py-2.5 bg-[#191B24]/95 hover:bg-[#252836] border border-slate-700/80 rounded-xl text-white shadow-xl backdrop-blur-md transition-all active:scale-95 cursor-pointer"
+              className="md:hidden absolute bottom-4 left-4 z-20 flex items-center gap-2 px-3.5 py-2.5 bg-[#211930]/95 hover:bg-[#392344] border border-[#392344] rounded-xl text-[#FFF0E8] shadow-xl backdrop-blur-md transition-all active:scale-95 cursor-pointer"
               aria-label="Open Directory and Filter Menu"
             >
-              <Layers className="w-4 h-4 text-[#20D9D2]" />
+              <Layers className="w-4 h-4 text-[#FF5CBA]" />
               <span className="text-xs font-bold tracking-wide">Directory</span>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#171426] text-[#FFAD83] border border-[#392344]">
                 {filteredLocations.length}
               </span>
             </button>
@@ -387,8 +387,8 @@ export default function App() {
 
           {/* Empty search feedback when no markers match */}
           {filteredLocations.length === 0 && (
-            <div className="absolute top-20 left-1/2 -translate-x-1/2 z-20 px-4 py-2.5 bg-[#191B24]/90 border border-slate-700/80 rounded-xl shadow-2xl backdrop-blur-md text-center pointer-events-auto">
-              <p className="text-xs font-semibold text-slate-200">
+            <div className="absolute top-20 left-1/2 -translate-x-1/2 z-20 px-4 py-2.5 bg-[#211930]/95 border border-[#392344] rounded-xl shadow-2xl backdrop-blur-md text-center pointer-events-auto">
+              <p className="text-xs font-semibold text-[#FFF0E8]">
                 No coordinates match your active filters
               </p>
               <div className="flex items-center justify-center gap-3 mt-1 text-[11px]">
@@ -399,7 +399,7 @@ export default function App() {
                     setSelectedRegion('all');
                     setSearchQuery('');
                   }}
-                  className="text-[#20D9D2] hover:underline"
+                  className="text-[#FF8FA3] hover:text-[#FF5CBA] font-semibold hover:underline cursor-pointer"
                 >
                   Reset all filters
                 </button>

@@ -4,56 +4,56 @@ export const CATEGORIES: Record<LocationCategory, CategoryMeta> = {
   collectibles: {
     id: 'collectibles',
     label: 'Collectibles',
-    color: '#FF3B91', // Neon pink
-    glowColor: 'rgba(255, 59, 145, 0.4)',
+    color: '#FF5CBA', // Hot pink
+    glowColor: 'rgba(255, 92, 186, 0.35)',
     icon: 'Diamond',
     description: 'Hidden packages, vintage vinyls, stunt jumps, and graffiti tags.',
   },
   missions: {
     id: 'missions',
     label: 'Missions & Leads',
-    color: '#20D9D2', // Electric turquoise
-    glowColor: 'rgba(32, 217, 210, 0.4)',
+    color: '#FF8FA3', // Sunset coral
+    glowColor: 'rgba(255, 143, 163, 0.35)',
     icon: 'Crosshair',
     description: 'Story objectives, stranger encounters, heist preps, and bounties.',
   },
   vehicles: {
     id: 'vehicles',
     label: 'Rare Vehicles',
-    color: '#FF9B45', // Warm orange
-    glowColor: 'rgba(255, 155, 69, 0.4)',
+    color: '#FFAD83', // Peach
+    glowColor: 'rgba(255, 173, 131, 0.35)',
     icon: 'Car',
     description: 'Spawn points for rare exotics, drag racers, offshore boats, and aircraft.',
   },
   businesses: {
     id: 'businesses',
     label: 'Businesses',
-    color: '#FBBF24', // Amber gold
-    glowColor: 'rgba(251, 191, 36, 0.4)',
+    color: '#B488D9', // Soft orchid purple
+    glowColor: 'rgba(180, 136, 217, 0.35)',
     icon: 'Briefcase',
     description: 'Nightclubs, chop shops, smuggling marinas, and fronts generating daily cut.',
   },
   safehouses: {
     id: 'safehouses',
     label: 'Safehouses',
-    color: '#A855F7', // Neon violet
-    glowColor: 'rgba(168, 85, 247, 0.4)',
+    color: '#42CFC3', // Turquoise
+    glowColor: 'rgba(66, 207, 195, 0.35)',
     icon: 'Home',
     description: 'Player hideouts with garages, stash points, wardrobe, and save bed.',
   },
   locations: {
     id: 'locations',
     label: 'Key Landmarks',
-    color: '#38BDF8', // Ocean cyan
-    glowColor: 'rgba(56, 189, 248, 0.4)',
+    color: '#FFF0E8', // Warm white
+    glowColor: 'rgba(255, 240, 232, 0.3)',
     icon: 'MapPin',
     description: 'Iconic viewpoints, transport hubs, civic monuments, and beaches.',
   },
   secrets: {
     id: 'secrets',
     label: 'Hidden Secrets',
-    color: '#10B981', // Emerald green
-    glowColor: 'rgba(16, 185, 129, 0.4)',
+    color: '#8D99AE', // Cool twilight slate
+    glowColor: 'rgba(141, 153, 174, 0.35)',
     icon: 'Eye',
     description: 'Sunken shipwrecks, ghost swamp lights, crypto bunkers, and Easter eggs.',
   },
@@ -64,7 +64,7 @@ export const REGIONS: Record<RegionId, RegionInfo> = {
     id: 'mount-kalaga',
     name: 'Mount Kalaga National Park',
     description: 'Northern mountainous wilderness with pine ridges, deep river gorges, and scenic peaks.',
-    color: '#A855F7',
+    color: '#B488D9',
     x: 48,
     y: 15,
   },
@@ -72,7 +72,7 @@ export const REGIONS: Record<RegionId, RegionInfo> = {
     id: 'ambrosia',
     name: 'Ambrosia & Lake District',
     description: 'Interior freshwater basin, Lake Ambrosia, citrus groves, dirt speedways, and quarries.',
-    color: '#38BDF8',
+    color: '#42CFC3',
     x: 52,
     y: 33,
   },
@@ -80,7 +80,7 @@ export const REGIONS: Record<RegionId, RegionInfo> = {
     id: 'gellhorn-shores',
     name: 'Port Gellhorn & Coast',
     description: 'Western coastal bays, working marinas, motel strip, speedway, and salt marsh estuaries.',
-    color: '#38BDF8',
+    color: '#FFAD83',
     x: 21,
     y: 45,
   },
@@ -88,7 +88,7 @@ export const REGIONS: Record<RegionId, RegionInfo> = {
     id: 'grassrivers',
     name: 'Grassrivers Bayous',
     description: 'Vast subtropical sawgrass wetlands, cypress bayous, airboat channels, and alligator dens.',
-    color: '#10B981',
+    color: '#42CFC3',
     x: 43,
     y: 58,
   },
@@ -96,7 +96,7 @@ export const REGIONS: Record<RegionId, RegionInfo> = {
     id: 'vice-city-downtown',
     name: 'Downtown Vice',
     description: 'Southeast corporate high-rises, Biscayne Bay marina, neon avenues, and nightlife.',
-    color: '#20D9D2',
+    color: '#FF8FA3',
     x: 75,
     y: 64,
   },
@@ -104,7 +104,7 @@ export const REGIONS: Record<RegionId, RegionInfo> = {
     id: 'vice-beach',
     name: 'Vice Beach & Ocean Dr',
     description: 'Southeast barrier island with Art Deco pastel hotels, Atlantic sands, and continuous neon.',
-    color: '#FF3B91',
+    color: '#FF5CBA',
     x: 89,
     y: 65,
   },
@@ -112,7 +112,7 @@ export const REGIONS: Record<RegionId, RegionInfo> = {
     id: 'port-leonida',
     name: 'Port Leonida',
     description: 'Deepwater container terminal, crane docks, and industrial smuggling lanes south of Downtown.',
-    color: '#FBBF24',
+    color: '#FFAD83',
     x: 79,
     y: 76,
   },
@@ -120,7 +120,7 @@ export const REGIONS: Record<RegionId, RegionInfo> = {
     id: 'gator-keys',
     name: 'Leonida Keys',
     description: 'An elongated archipelago extending southwards into open ocean via the Overseas Viaduct.',
-    color: '#FF9B45',
+    color: '#42CFC3',
     x: 52,
     y: 88,
   },

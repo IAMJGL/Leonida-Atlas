@@ -33,31 +33,31 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     {
       id: 'tropical',
       label: 'Tropical Coastal',
-      desc: 'Balanced vibrant coastal colors, sandy beaches, lush wetlands',
-      icon: <Sun className="w-4 h-4 text-[#FF9B45]" />,
+      desc: 'Balanced coastal colors, warm sandy beaches, and lush wetlands',
+      icon: <Sun className="w-4 h-4 text-[#FFAD83]" />,
     },
     {
       id: 'night',
       label: 'Night Heat',
-      desc: 'Dark obsidian landmass with glowing neon pink & cyan highway arteries',
-      icon: <Moon className="w-4 h-4 text-[#FF3B91]" />,
+      desc: 'Deep coastal landmass with crisp amber & turquoise arterial highways',
+      icon: <Moon className="w-4 h-4 text-[#FF5CBA]" />,
     },
     {
       id: 'recon',
       label: 'Tactical Recon',
-      desc: 'High-contrast topographic style with bathymetric sonar contours',
-      icon: <Radar className="w-4 h-4 text-[#20D9D2]" />,
+      desc: 'High-contrast topographic style with turquoise bathymetric contours',
+      icon: <Radar className="w-4 h-4 text-[#42CFC3]" />,
     },
   ];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg bg-[#14161f] border border-slate-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+      <div className="relative w-full max-w-lg bg-[#171426] border border-[#392344] rounded-2xl shadow-2xl overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="px-5 py-3.5 bg-[#101116] border-b border-slate-800 flex items-center justify-between">
+        <div className="px-5 py-3.5 bg-[#211930] border-b border-[#392344] flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <Sliders className="w-4 h-4 text-[#20D9D2]" />
-            <h2 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
+            <Sliders className="w-4 h-4 text-[#FF5CBA]" />
+            <h2 className="text-sm font-bold text-[#FFF0E8] uppercase tracking-wider font-mono">
               Atlas Preferences & Overlays
             </h2>
           </div>
@@ -66,7 +66,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               onClose();
               playSound('click', settings.soundEffects);
             }}
-            className="w-7 h-7 rounded-lg bg-[#191B24] hover:bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-colors"
+            className="w-7 h-7 rounded-lg bg-[#171426] hover:bg-[#392344] text-[#FFF0E8]/70 hover:text-[#FFF0E8] border border-[#392344] flex items-center justify-center transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -76,7 +76,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         <div className="p-5 space-y-5 overflow-y-auto max-h-[80vh]">
           {/* Map Style Theme */}
           <div>
-            <label className="block text-xs font-mono uppercase text-slate-400 mb-2">
+            <label className="block text-xs font-mono uppercase text-[#FFF0E8]/55 mb-2">
               Visual Environment Theme
             </label>
             <div className="space-y-2">
@@ -87,16 +87,16 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     onUpdateSettings({ mapStyle: s.id });
                     playSound('toggle', settings.soundEffects);
                   }}
-                  className={`w-full p-3 rounded-xl border text-left flex items-start gap-3 transition-colors ${
+                  className={`w-full p-3 rounded-xl border text-left flex items-start gap-3 transition-colors cursor-pointer ${
                     settings.mapStyle === s.id
-                      ? 'bg-[#191B24] border-[#20D9D2] text-white shadow-[0_0_12px_rgba(32,217,210,0.15)]'
-                      : 'bg-[#191B24]/40 border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-[#191B24]'
+                      ? 'bg-[#392344]/85 border-[#FF5CBA]/75 text-[#FFF0E8]'
+                      : 'bg-[#211930]/70 border-[#392344] text-[#FFF0E8]/70 hover:text-[#FFF0E8] hover:bg-[#2B1F3A]'
                   }`}
                 >
-                  <div className="p-2 rounded-lg bg-[#101116] mt-0.5">{s.icon}</div>
+                  <div className="p-2 rounded-lg bg-[#171426] border border-[#392344] mt-0.5">{s.icon}</div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-xs font-bold text-white">{s.label}</div>
-                    <div className="text-[11px] text-slate-400">{s.desc}</div>
+                    <div className="text-xs font-bold text-[#FFF0E8]">{s.label}</div>
+                    <div className="text-[11px] text-[#FFF0E8]/60">{s.desc}</div>
                   </div>
                 </button>
               ))}
@@ -105,15 +105,15 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
           {/* Map Overlay Toggles */}
           <div>
-            <label className="block text-xs font-mono uppercase text-slate-400 mb-2">
+            <label className="block text-xs font-mono uppercase text-[#FFF0E8]/55 mb-2">
               Vector Map Layer Toggles
             </label>
             <div className="space-y-2">
               {/* Roads */}
-              <div className="flex items-center justify-between p-3 bg-[#191B24] border border-slate-800 rounded-xl">
+              <div className="flex items-center justify-between p-3 bg-[#211930] border border-[#392344] rounded-xl">
                 <div>
-                  <div className="text-xs font-semibold text-white">Interstate & Highways</div>
-                  <div className="text-[11px] text-slate-400">
+                  <div className="text-xs font-semibold text-[#FFF0E8]">Interstate & Highways</div>
+                  <div className="text-[11px] text-[#FFF0E8]/55">
                     Show arterial roads, bridges and viaducts
                   </div>
                 </div>
@@ -122,12 +122,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     onUpdateSettings({ showRoads: !settings.showRoads });
                     playSound('toggle', settings.soundEffects);
                   }}
-                  className={`w-11 h-6 rounded-full transition-colors relative ${
-                    settings.showRoads ? 'bg-[#20D9D2]' : 'bg-slate-700'
+                  className={`w-11 h-6 rounded-full transition-colors relative cursor-pointer ${
+                    settings.showRoads ? 'bg-[#42CFC3]' : 'bg-[#392344]'
                   }`}
                 >
                   <span
-                    className={`block w-4 h-4 rounded-full bg-white transition-transform ${
+                    className={`block w-4 h-4 rounded-full bg-[#FFF0E8] shadow-sm transition-transform ${
                       settings.showRoads ? 'translate-x-6' : 'translate-x-1'
                     }`}
                   />
@@ -135,10 +135,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </div>
 
               {/* Districts */}
-              <div className="flex items-center justify-between p-3 bg-[#191B24] border border-slate-800 rounded-xl">
+              <div className="flex items-center justify-between p-3 bg-[#211930] border border-[#392344] rounded-xl">
                 <div>
-                  <div className="text-xs font-semibold text-white">District & Sector Labels</div>
-                  <div className="text-[11px] text-slate-400">
+                  <div className="text-xs font-semibold text-[#FFF0E8]">District & Sector Labels</div>
+                  <div className="text-[11px] text-[#FFF0E8]/55">
                     Show names of Vice Beach, Grassrivers, Keys
                   </div>
                 </div>
@@ -147,12 +147,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     onUpdateSettings({ showDistrictLabels: !settings.showDistrictLabels });
                     playSound('toggle', settings.soundEffects);
                   }}
-                  className={`w-11 h-6 rounded-full transition-colors relative ${
-                    settings.showDistrictLabels ? 'bg-[#20D9D2]' : 'bg-slate-700'
+                  className={`w-11 h-6 rounded-full transition-colors relative cursor-pointer ${
+                    settings.showDistrictLabels ? 'bg-[#42CFC3]' : 'bg-[#392344]'
                   }`}
                 >
                   <span
-                    className={`block w-4 h-4 rounded-full bg-white transition-transform ${
+                    className={`block w-4 h-4 rounded-full bg-[#FFF0E8] shadow-sm transition-transform ${
                       settings.showDistrictLabels ? 'translate-x-6' : 'translate-x-1'
                     }`}
                   />
@@ -160,10 +160,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </div>
 
               {/* Tactical Grid */}
-              <div className="flex items-center justify-between p-3 bg-[#191B24] border border-slate-800 rounded-xl">
+              <div className="flex items-center justify-between p-3 bg-[#211930] border border-[#392344] rounded-xl">
                 <div>
-                  <div className="text-xs font-semibold text-white">Tactical GPS Grid</div>
-                  <div className="text-[11px] text-slate-400">
+                  <div className="text-xs font-semibold text-[#FFF0E8]">Tactical GPS Grid</div>
+                  <div className="text-[11px] text-[#FFF0E8]/55">
                     Show Lat/Lon coordinate ticks and overlay grid
                   </div>
                 </div>
@@ -172,12 +172,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     onUpdateSettings({ showGridLines: !settings.showGridLines });
                     playSound('toggle', settings.soundEffects);
                   }}
-                  className={`w-11 h-6 rounded-full transition-colors relative ${
-                    settings.showGridLines ? 'bg-[#20D9D2]' : 'bg-slate-700'
+                  className={`w-11 h-6 rounded-full transition-colors relative cursor-pointer ${
+                    settings.showGridLines ? 'bg-[#42CFC3]' : 'bg-[#392344]'
                   }`}
                 >
                   <span
-                    className={`block w-4 h-4 rounded-full bg-white transition-transform ${
+                    className={`block w-4 h-4 rounded-full bg-[#FFF0E8] shadow-sm transition-transform ${
                       settings.showGridLines ? 'translate-x-6' : 'translate-x-1'
                     }`}
                   />
@@ -188,19 +188,19 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
           {/* Audio Setting */}
           <div>
-            <label className="block text-xs font-mono uppercase text-slate-400 mb-2">
+            <label className="block text-xs font-mono uppercase text-[#FFF0E8]/55 mb-2">
               Audio Feedback
             </label>
-            <div className="flex items-center justify-between p-3 bg-[#191B24] border border-slate-800 rounded-xl">
+            <div className="flex items-center justify-between p-3 bg-[#211930] border border-[#392344] rounded-xl">
               <div className="flex items-center gap-2.5">
                 {settings.soundEffects ? (
-                  <Volume2 className="w-4 h-4 text-[#20D9D2]" />
+                  <Volume2 className="w-4 h-4 text-[#42CFC3]" />
                 ) : (
-                  <VolumeX className="w-4 h-4 text-slate-500" />
+                  <VolumeX className="w-4 h-4 text-[#FFF0E8]/40" />
                 )}
                 <div>
-                  <div className="text-xs font-semibold text-white">HUD Synthesized Sound FX</div>
-                  <div className="text-[11px] text-slate-400">
+                  <div className="text-xs font-semibold text-[#FFF0E8]">HUD Synthesized Sound FX</div>
+                  <div className="text-[11px] text-[#FFF0E8]/55">
                     Waypoint pings, selector clicks, and discovery chimes
                   </div>
                 </div>
@@ -211,12 +211,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   onUpdateSettings({ soundEffects: next });
                   playSound('toggle', next);
                 }}
-                className={`w-11 h-6 rounded-full transition-colors relative ${
-                  settings.soundEffects ? 'bg-[#20D9D2]' : 'bg-slate-700'
+                className={`w-11 h-6 rounded-full transition-colors relative cursor-pointer ${
+                  settings.soundEffects ? 'bg-[#42CFC3]' : 'bg-[#392344]'
                 }`}
               >
                 <span
-                  className={`block w-4 h-4 rounded-full bg-white transition-transform ${
+                  className={`block w-4 h-4 rounded-full bg-[#FFF0E8] shadow-sm transition-transform ${
                     settings.soundEffects ? 'translate-x-6' : 'translate-x-1'
                   }`}
                 />
@@ -225,25 +225,25 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           </div>
 
           {/* Independent Disclaimer */}
-          <div className="p-3 bg-[#101116] border border-slate-800 rounded-xl space-y-1.5">
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-              <Info className="w-4 h-4 text-[#FF9B45] shrink-0" />
+          <div className="p-3.5 bg-[#211930] border border-[#392344] rounded-xl space-y-1.5">
+            <div className="flex items-center gap-2 text-xs font-bold text-[#FFF0E8]">
+              <Info className="w-4 h-4 text-[#FFAD83] shrink-0" />
               Independent Fan Companion Concept
             </div>
-            <p className="text-[11px] text-slate-400 leading-relaxed">
+            <p className="text-[11px] text-[#FFF0E8]/65 leading-relaxed">
               Leonida Atlas is an independent fan project concept inspired by the fictional setting of GTA VI. It is not affiliated with, endorsed by, or associated with Rockstar Games or Take-Two Interactive. All coordinates and locations presented are original sample concept data.
             </p>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="px-5 py-3 bg-[#101116] border-t border-slate-800 flex justify-end">
+        <div className="px-5 py-3.5 bg-[#211930] border-t border-[#392344] flex justify-end">
           <button
             onClick={() => {
               onClose();
               playSound('click', settings.soundEffects);
             }}
-            className="px-4 py-2 bg-[#20D9D2] hover:bg-[#1db8b2] text-slate-950 font-bold rounded-xl text-xs transition-colors"
+            className="px-5 py-2 bg-[#FF5CBA] hover:bg-[#F049AD] text-[#171426] font-bold rounded-xl text-xs uppercase tracking-wider transition-colors cursor-pointer"
           >
             Done
           </button>

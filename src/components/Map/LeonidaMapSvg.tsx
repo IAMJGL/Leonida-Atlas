@@ -18,52 +18,52 @@ export const LeonidaMapSvg: React.FC<LeonidaMapSvgProps> = ({
   const isNight = styleMode === 'night';
   const isRecon = styleMode === 'recon';
 
-  // Palette definitions
-  const oceanFill = isNight ? '#0b0c10' : isRecon ? '#08141e' : '#0c1524';
-  const shallowWaterFill = isNight ? '#10141f' : isRecon ? '#0c2233' : '#11293d';
-  const reefWaterFill = isNight ? '#131b2e' : isRecon ? '#103046' : '#133e54';
+  // Natural cartographic palette (no pink overlays or tints on map artwork)
+  const oceanFill = isNight ? '#0E1521' : isRecon ? '#111A26' : '#121B2B';
+  const shallowWaterFill = isNight ? '#152334' : isRecon ? '#182A3D' : '#192A3F';
+  const reefWaterFill = isNight ? '#1A2D42' : isRecon ? '#1E384F' : '#1F3650';
 
-  const mainlandFill = isNight ? '#13151f' : isRecon ? '#141d24' : '#18202a';
-  const urbanFill = isNight ? '#1b1e2c' : isRecon ? '#1b2732' : '#222b3a';
-  const wetlandsFill = isNight ? '#0e1818' : isRecon ? '#132420' : '#152b24';
-  const beachFill = isNight ? '#2a2228' : isRecon ? '#2d2e24' : '#3e3629';
-  const runwayFill = isNight ? '#282b3d' : isRecon ? '#263745' : '#2d3748';
-  const mountainFill = isNight ? '#181b2a' : isRecon ? '#182b28' : '#212936';
-  const mountainPeakFill = isNight ? '#212538' : isRecon ? '#1d3834' : '#2a3545';
+  const mainlandFill = isNight ? '#1B2330' : isRecon ? '#1F2937' : '#222C3B';
+  const urbanFill = isNight ? '#263142' : isRecon ? '#283648' : '#2B384C';
+  const wetlandsFill = isNight ? '#16282A' : isRecon ? '#172D2E' : '#1A3132';
+  const beachFill = isNight ? '#3B362E' : isRecon ? '#36342F' : '#4A4236';
+  const runwayFill = isNight ? '#232C3B' : isRecon ? '#253142' : '#283344';
+  const mountainFill = isNight ? '#1E2A2B' : isRecon ? '#1F2D2E' : '#233233';
+  const mountainPeakFill = isNight ? '#273739' : isRecon ? '#283B3D' : '#2D4042';
 
-  const highwayStroke = isNight ? '#ff3b91' : isRecon ? '#00e5ff' : '#ff9b45';
-  const highwayGlow = isNight ? 'rgba(255, 59, 145, 0.45)' : isRecon ? 'rgba(0, 229, 255, 0.45)' : 'rgba(255, 155, 69, 0.3)';
-  const arterialStroke = isNight ? '#3b4361' : isRecon ? '#2b4759' : '#414d63';
-  const trailStroke = isNight ? '#222738' : isRecon ? '#1f342d' : '#2b3b33';
+  const highwayStroke = isNight ? '#FFAD83' : isRecon ? '#42CFC3' : '#F4B886';
+  const highwayGlow = isNight ? 'rgba(0, 0, 0, 0.45)' : isRecon ? 'rgba(66, 207, 195, 0.2)' : 'rgba(0, 0, 0, 0.35)';
+  const arterialStroke = isNight ? '#465469' : isRecon ? '#364E5E' : '#4E5D73';
+  const trailStroke = isNight ? '#334155' : isRecon ? '#283D3B' : '#3B4A5E';
 
   return (
     <g className="leonida-map-graphics pointer-events-none">
       <defs>
         {/* Tactical grid pattern */}
         <pattern id="tactical-grid-tall" width="100" height="100" patternUnits="userSpaceOnUse">
-          <path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255, 255, 255, 0.04)" strokeWidth="0.8" />
-          <circle cx="100" cy="100" r="1.5" fill="rgba(32, 217, 210, 0.2)" />
+          <path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255, 240, 232, 0.05)" strokeWidth="0.8" />
+          <circle cx="100" cy="100" r="1.5" fill="rgba(66, 207, 195, 0.28)" />
         </pattern>
 
         {/* Urban city block hatching */}
         <pattern id="urban-blocks-grid" width="16" height="16" patternUnits="userSpaceOnUse">
-          <rect width="14" height="14" fill="none" stroke="rgba(255, 255, 255, 0.04)" strokeWidth="0.75" />
+          <rect width="14" height="14" fill="none" stroke="rgba(255, 240, 232, 0.05)" strokeWidth="0.75" />
         </pattern>
 
         {/* Wetlands sawgrass pattern */}
         <pattern id="sawgrass-texture" width="30" height="30" patternUnits="userSpaceOnUse">
-          <path d="M 5,25 Q 10,12 8,5 M 12,25 Q 17,10 20,6 M 22,25 Q 24,14 27,8" fill="none" stroke="rgba(32, 217, 210, 0.09)" strokeWidth="1" />
+          <path d="M 5,25 Q 10,12 8,5 M 12,25 Q 17,10 20,6 M 22,25 Q 24,14 27,8" fill="none" stroke="rgba(66, 207, 195, 0.16)" strokeWidth="1" />
         </pattern>
 
         {/* Pine forest texture for Mount Kalaga */}
         <pattern id="pine-forest-texture" width="24" height="24" patternUnits="userSpaceOnUse">
-          <path d="M 12,4 L 7,16 L 17,16 Z M 12,16 L 12,20" fill="none" stroke="rgba(168, 85, 247, 0.12)" strokeWidth="0.8" />
+          <path d="M 12,4 L 7,16 L 17,16 Z M 12,16 L 12,20" fill="none" stroke="rgba(110, 175, 165, 0.2)" strokeWidth="0.8" />
         </pattern>
 
         {/* Depth gradients */}
         <radialGradient id="atlantic-deep-glow" cx="80%" cy="65%" r="70%">
-          <stop offset="0%" stopColor="#142c44" stopOpacity="0.45" />
-          <stop offset="100%" stopColor="#080c14" stopOpacity="0.85" />
+          <stop offset="0%" stopColor="#18273B" stopOpacity="0.45" />
+          <stop offset="100%" stopColor="#0C121C" stopOpacity="0.9" />
         </radialGradient>
       </defs>
 
@@ -134,7 +134,7 @@ export const LeonidaMapSvg: React.FC<LeonidaMapSvgProps> = ({
           Z
         "
         fill={mainlandFill}
-        stroke={isNight ? 'rgba(255, 59, 145, 0.3)' : 'rgba(32, 217, 210, 0.3)'}
+        stroke="rgba(66, 207, 195, 0.28)"
         strokeWidth="1.8"
       />
 
@@ -153,7 +153,7 @@ export const LeonidaMapSvg: React.FC<LeonidaMapSvgProps> = ({
             Z
           "
           fill={mountainFill}
-          stroke="rgba(168, 85, 247, 0.25)"
+          stroke="rgba(100, 150, 145, 0.28)"
           strokeWidth="1.5"
         />
         {/* Pine forest pattern */}
@@ -183,15 +183,15 @@ export const LeonidaMapSvg: React.FC<LeonidaMapSvgProps> = ({
             Z
           "
           fill={mountainPeakFill}
-          stroke="rgba(168, 85, 247, 0.4)"
+          stroke="rgba(148, 163, 184, 0.35)"
           strokeWidth="1.2"
         />
 
         {/* Mountain Peaks Triangles with Elevation Accents */}
-        <polygon points="920,330 940,370 900,370" fill="#a855f7" opacity="0.75" />
-        <polygon points="1040,345 1060,385 1020,385" fill="#a855f7" opacity="0.6" />
-        <polygon points="820,360 838,395 802,395" fill="#a855f7" opacity="0.55" />
-        <polygon points="980,420 998,455 962,455" fill="#a855f7" opacity="0.5" />
+        <polygon points="920,330 940,370 900,370" fill="#94A3B8" opacity="0.75" />
+        <polygon points="1040,345 1060,385 1020,385" fill="#94A3B8" opacity="0.6" />
+        <polygon points="820,360 838,395 802,395" fill="#94A3B8" opacity="0.55" />
+        <polygon points="980,420 998,455 962,455" fill="#94A3B8" opacity="0.5" />
 
         {/* Kalaga River Gorge (Winding rapids carving south-east from the peaks) */}
         <path
@@ -219,10 +219,10 @@ export const LeonidaMapSvg: React.FC<LeonidaMapSvgProps> = ({
             T 1080,850
           "
           fill="none"
-          stroke="#20d9d2"
+          stroke="#55B8B0"
           strokeWidth="3"
           strokeLinecap="round"
-          opacity="0.8"
+          opacity="0.85"
         />
       </g>
 
@@ -436,7 +436,7 @@ export const LeonidaMapSvg: React.FC<LeonidaMapSvgProps> = ({
             Z
           "
           fill={urbanFill}
-          stroke="rgba(255, 59, 145, 0.4)"
+          stroke="rgba(255, 173, 131, 0.35)"
           strokeWidth="1.5"
         />
         <path
@@ -622,10 +622,10 @@ export const LeonidaMapSvg: React.FC<LeonidaMapSvgProps> = ({
               C 1805,2130 1780,2230 1740,2270
             "
             fill="none"
-            stroke="#ff3b91"
+            stroke="#42CFC3"
             strokeWidth="4.5"
             strokeLinecap="round"
-            filter="drop-shadow(0 0 7px rgba(255, 59, 145, 0.6))"
+            filter="drop-shadow(0 0 4px rgba(0, 0, 0, 0.5))"
           />
 
           {/* Seven-Mile Overseas Viaduct (Keys Highway extending deep south into the ocean) */}
@@ -696,19 +696,19 @@ export const LeonidaMapSvg: React.FC<LeonidaMapSvgProps> = ({
           <text
             x="980"
             y="290"
-            fill="#a855f7"
+            fill="#C7D2E0"
             fontSize="30"
             fontWeight="800"
             letterSpacing="7"
             textAnchor="middle"
-            filter="drop-shadow(0 0 10px rgba(168, 85, 247, 0.7))"
+            filter="drop-shadow(0 2px 6px rgba(0, 0, 0, 0.85))"
           >
             MOUNT KALAGA NATIONAL PARK
           </text>
           <text
             x="980"
             y="318"
-            fill="rgba(255, 255, 255, 0.65)"
+            fill="rgba(255, 240, 232, 0.78)"
             fontSize="12"
             letterSpacing="4"
             textAnchor="middle"
@@ -720,19 +720,19 @@ export const LeonidaMapSvg: React.FC<LeonidaMapSvgProps> = ({
           <text
             x="1110"
             y="940"
-            fill="#38bdf8"
+            fill="#42CFC3"
             fontSize="26"
             fontWeight="800"
             letterSpacing="5"
             textAnchor="middle"
-            filter="drop-shadow(0 0 8px rgba(56, 189, 248, 0.6))"
+            filter="drop-shadow(0 2px 6px rgba(0, 0, 0, 0.85))"
           >
             LAKE AMBROSIA
           </text>
           <text
             x="1110"
             y="965"
-            fill="rgba(255, 255, 255, 0.65)"
+            fill="rgba(255, 240, 232, 0.78)"
             fontSize="12"
             letterSpacing="3"
             textAnchor="middle"
@@ -744,19 +744,19 @@ export const LeonidaMapSvg: React.FC<LeonidaMapSvgProps> = ({
           <text
             x="420"
             y="1140"
-            fill="#38bdf8"
+            fill="#FFAD83"
             fontSize="26"
             fontWeight="800"
             letterSpacing="5"
             textAnchor="middle"
-            filter="drop-shadow(0 0 8px rgba(56, 189, 248, 0.6))"
+            filter="drop-shadow(0 2px 6px rgba(0, 0, 0, 0.85))"
           >
             PORT GELLHORN
           </text>
           <text
             x="420"
             y="1165"
-            fill="rgba(255, 255, 255, 0.65)"
+            fill="rgba(255, 240, 232, 0.78)"
             fontSize="12"
             letterSpacing="3"
             textAnchor="middle"
@@ -768,19 +768,19 @@ export const LeonidaMapSvg: React.FC<LeonidaMapSvgProps> = ({
           <text
             x="960"
             y="1700"
-            fill="#10b981"
+            fill="#42CFC3"
             fontSize="34"
             fontWeight="800"
             letterSpacing="9"
             textAnchor="middle"
-            filter="drop-shadow(0 0 10px rgba(16, 185, 129, 0.7))"
+            filter="drop-shadow(0 2px 6px rgba(0, 0, 0, 0.85))"
           >
             GRASSRIVERS
           </text>
           <text
             x="960"
             y="1730"
-            fill="rgba(255, 255, 255, 0.65)"
+            fill="rgba(255, 240, 232, 0.78)"
             fontSize="13"
             letterSpacing="5"
             textAnchor="middle"
@@ -792,19 +792,19 @@ export const LeonidaMapSvg: React.FC<LeonidaMapSvgProps> = ({
           <text
             x="1480"
             y="1730"
-            fill="#20d9d2"
-            fontSize="32"
-            fontWeight="800"
+            fill="#FFF0E8"
+            fontSize="34"
+            fontWeight="900"
             letterSpacing="6"
             textAnchor="middle"
-            filter="drop-shadow(0 0 10px rgba(32, 217, 210, 0.7))"
+            filter="drop-shadow(0 2px 8px rgba(0, 0, 0, 0.9))"
           >
             DOWNTOWN VICE
           </text>
           <text
             x="1480"
             y="1758"
-            fill="rgba(255, 255, 255, 0.65)"
+            fill="rgba(255, 240, 232, 0.78)"
             fontSize="13"
             letterSpacing="4"
             textAnchor="middle"
@@ -816,20 +816,20 @@ export const LeonidaMapSvg: React.FC<LeonidaMapSvgProps> = ({
           <text
             x="1830"
             y="1740"
-            fill="#ff3b91"
-            fontSize="28"
-            fontWeight="800"
+            fill="#FFAD83"
+            fontSize="30"
+            fontWeight="900"
             letterSpacing="6"
             textAnchor="middle"
             transform="rotate(82 1830 1740)"
-            filter="drop-shadow(0 0 10px rgba(255, 59, 145, 0.8))"
+            filter="drop-shadow(0 2px 8px rgba(0, 0, 0, 0.9))"
           >
             VICE BEACH
           </text>
           <text
             x="1810"
             y="1940"
-            fill="rgba(255, 255, 255, 0.65)"
+            fill="rgba(255, 240, 232, 0.78)"
             fontSize="12"
             letterSpacing="3"
             textAnchor="middle"
@@ -842,12 +842,12 @@ export const LeonidaMapSvg: React.FC<LeonidaMapSvgProps> = ({
           <text
             x="1580"
             y="2140"
-            fill="#fbbf24"
+            fill="#CBD5E1"
             fontSize="22"
             fontWeight="700"
             letterSpacing="4"
             textAnchor="middle"
-            filter="drop-shadow(0 0 8px rgba(251, 191, 36, 0.6))"
+            filter="drop-shadow(0 2px 6px rgba(0, 0, 0, 0.85))"
           >
             PORT LEONIDA
           </text>
@@ -856,19 +856,19 @@ export const LeonidaMapSvg: React.FC<LeonidaMapSvgProps> = ({
           <text
             x="1020"
             y="2440"
-            fill="#ff9b45"
+            fill="#42CFC3"
             fontSize="30"
             fontWeight="800"
             letterSpacing="7"
             textAnchor="middle"
-            filter="drop-shadow(0 0 10px rgba(255, 155, 69, 0.7))"
+            filter="drop-shadow(0 2px 8px rgba(0, 0, 0, 0.9))"
           >
             LEONIDA KEYS
           </text>
           <text
             x="1020"
             y="2468"
-            fill="rgba(255, 255, 255, 0.65)"
+            fill="rgba(255, 240, 232, 0.78)"
             fontSize="13"
             letterSpacing="4"
             textAnchor="middle"

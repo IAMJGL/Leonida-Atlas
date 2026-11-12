@@ -30,21 +30,22 @@ export const MapMarker: React.FC<MapMarkerProps> = ({
   const scale = Math.max(0.6, Math.min(1.5, 1 / Math.pow(zoom, 0.45)));
 
   const markerColor = categoryMeta.color;
+  const glyphColor = location.category === 'locations' && !location.discovered ? '#171426' : '#ffffff';
 
   const renderIconGlyph = () => {
     switch (location.category) {
       case 'collectibles':
         // Diamond / Gem
-        return <polygon points="0,-7 7,0 0,7 -7,0" fill="#ffffff" />;
+        return <polygon points="0,-7 7,0 0,7 -7,0" fill={glyphColor} />;
       case 'missions':
         // Star / Crosshair
         return (
-          <g fill="#ffffff">
+          <g fill={glyphColor}>
             <circle cx="0" cy="0" r="3" />
-            <line x1="-7" y1="0" x2="-3.5" y2="0" stroke="#ffffff" strokeWidth="1.6" />
-            <line x1="3.5" y1="0" x2="7" y2="0" stroke="#ffffff" strokeWidth="1.6" />
-            <line x1="0" y1="-7" x2="0" y2="-3.5" stroke="#ffffff" strokeWidth="1.6" />
-            <line x1="0" y1="3.5" x2="0" y2="7" stroke="#ffffff" strokeWidth="1.6" />
+            <line x1="-7" y1="0" x2="-3.5" y2="0" stroke={glyphColor} strokeWidth="1.6" />
+            <line x1="3.5" y1="0" x2="7" y2="0" stroke={glyphColor} strokeWidth="1.6" />
+            <line x1="0" y1="-7" x2="0" y2="-3.5" stroke={glyphColor} strokeWidth="1.6" />
+            <line x1="0" y1="3.5" x2="0" y2="7" stroke={glyphColor} strokeWidth="1.6" />
           </g>
         );
       case 'vehicles':
@@ -52,15 +53,15 @@ export const MapMarker: React.FC<MapMarkerProps> = ({
         return (
           <path
             d="M -6,3 L -5,-1 L -2,-4 L 3,-4 L 6,-1 L 6,3 Z M -4,4 A 1.5 1.5 0 1 1 -4,1 A 1.5 1.5 0 1 1 -4,4 Z M 4,4 A 1.5 1.5 0 1 1 4,1 A 1.5 1.5 0 1 1 4,4 Z"
-            fill="#ffffff"
+            fill={glyphColor}
           />
         );
       case 'businesses':
         // Briefcase
         return (
-          <g fill="#ffffff">
+          <g fill={glyphColor}>
             <rect x="-6" y="-3" width="12" height="8" rx="1.5" />
-            <path d="M -3,-3 L -3,-5 L 3,-5 L 3,-3" fill="none" stroke="#ffffff" strokeWidth="1.2" />
+            <path d="M -3,-3 L -3,-5 L 3,-5 L 3,-3" fill="none" stroke={glyphColor} strokeWidth="1.2" />
           </g>
         );
       case 'safehouses':
@@ -68,13 +69,13 @@ export const MapMarker: React.FC<MapMarkerProps> = ({
         return (
           <path
             d="M 0,-7 L -7,-0.5 L -5,-0.5 L -5,6 L 5,6 L 5,-0.5 L 7,-0.5 Z"
-            fill="#ffffff"
+            fill={glyphColor}
           />
         );
       case 'locations':
         // Pin dot
         return (
-          <g fill="#ffffff">
+          <g fill={glyphColor}>
             <circle cx="0" cy="-2" r="4" />
             <path d="M -3,-1 L 0,6 L 3,-1 Z" />
           </g>
@@ -82,13 +83,13 @@ export const MapMarker: React.FC<MapMarkerProps> = ({
       case 'secrets':
         // Eye of mystery
         return (
-          <g fill="#ffffff">
+          <g fill={glyphColor}>
             <path d="M -7,0 Q 0,-5 7,0 Q 0,5 -7,0 Z" />
             <circle cx="0" cy="0" r="2.2" fill={markerColor} />
           </g>
         );
       default:
-        return <circle cx="0" cy="0" r="4" fill="#ffffff" />;
+        return <circle cx="0" cy="0" r="4" fill={glyphColor} />;
     }
   };
 
@@ -109,11 +110,11 @@ export const MapMarker: React.FC<MapMarkerProps> = ({
       {/* Waypoint Beacon Pulse */}
       {isWaypoint && (
         <g>
-          <circle cx="0" cy="0" r="28" fill="none" stroke="#20d9d2" strokeWidth="2" opacity="0.6">
+          <circle cx="0" cy="0" r="28" fill="none" stroke="#42CFC3" strokeWidth="2.5" opacity="0.8">
             <animate attributeName="r" values="14;34;14" dur="2s" repeatCount="indefinite" />
-            <animate attributeName="opacity" values="0.8;0.1;0.8" dur="2s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="0.9;0.1;0.9" dur="2s" repeatCount="indefinite" />
           </circle>
-          <circle cx="0" cy="0" r="16" fill="rgba(32, 217, 210, 0.25)" />
+          <circle cx="0" cy="0" r="16" fill="rgba(66, 207, 195, 0.25)" />
         </g>
       )}
 
@@ -129,15 +130,15 @@ export const MapMarker: React.FC<MapMarkerProps> = ({
       )}
 
       {/* Discovered / Undiscovered Visual State */}
-      {/* Outer Glow Disc */}
+      {/* Outer Disc */}
       <circle
         cx="0"
         cy="0"
         r={isHovered ? 18 : 15}
-        fill={location.discovered ? 'rgba(25, 27, 36, 0.9)' : markerColor}
-        stroke={location.discovered ? markerColor : '#ffffff'}
-        strokeWidth={location.discovered ? 2 : 2.5}
-        filter={isSelected || isHovered ? `drop-shadow(0 0 10px ${markerColor})` : `drop-shadow(0 2px 4px rgba(0,0,0,0.7))`}
+        fill={location.discovered ? 'rgba(23, 20, 38, 0.95)' : markerColor}
+        stroke={location.discovered ? markerColor : '#171426'}
+        strokeWidth={location.discovered ? 2 : 2.2}
+        filter={isSelected || isHovered ? `drop-shadow(0 0 8px ${markerColor})` : `drop-shadow(0 2px 4px rgba(0,0,0,0.7))`}
         className="transition-all duration-150"
       />
 
@@ -149,8 +150,8 @@ export const MapMarker: React.FC<MapMarkerProps> = ({
       {/* Discovered Checkmark Badge in corner */}
       {location.discovered && (
         <g transform="translate(10, -10)">
-          <circle cx="0" cy="0" r="6" fill="#10b981" stroke="#101116" strokeWidth="1.5" />
-          <path d="M -3,-0.5 L -1,2 L 3,-2" fill="none" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="0" cy="0" r="6" fill="#42CFC3" stroke="#171426" strokeWidth="1.5" />
+          <path d="M -3,-0.5 L -1,2 L 3,-2" fill="none" stroke="#171426" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </g>
       )}
 
@@ -164,21 +165,21 @@ export const MapMarker: React.FC<MapMarkerProps> = ({
             width="160"
             height="32"
             rx="6"
-            fill="#191b24"
+            fill="#171426"
             stroke={markerColor}
             strokeWidth="1.5"
-            filter="drop-shadow(0 4px 12px rgba(0,0,0,0.8))"
+            filter="drop-shadow(0 4px 14px rgba(0,0,0,0.85))"
           />
           {/* Tooltip Little Triangle Pointer */}
-          <polygon points="-5,4 5,4 0,9" fill="#191b24" stroke={markerColor} strokeWidth="1.5" />
+          <polygon points="-5,4 5,4 0,9" fill="#171426" stroke={markerColor} strokeWidth="1.5" />
           {/* Cover bottom stroke overlap */}
-          <line x1="-5" y1="4" x2="5" y2="4" stroke="#191b24" strokeWidth="2" />
+          <line x1="-5" y1="4" x2="5" y2="4" stroke="#171426" strokeWidth="2" />
 
           {/* Title */}
           <text
             x="0"
             y="-15"
-            fill="#ffffff"
+            fill="#FFF0E8"
             fontSize="10"
             fontWeight="700"
             textAnchor="middle"
@@ -191,7 +192,7 @@ export const MapMarker: React.FC<MapMarkerProps> = ({
           <text
             x="0"
             y="-4"
-            fill={location.discovered ? '#10b981' : 'rgba(255, 255, 255, 0.65)'}
+            fill={location.discovered ? '#42CFC3' : 'rgba(255, 240, 232, 0.7)'}
             fontSize="8"
             fontWeight="500"
             textAnchor="middle"
