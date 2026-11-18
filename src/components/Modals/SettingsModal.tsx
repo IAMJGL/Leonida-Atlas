@@ -12,8 +12,8 @@ import {
   Moon,
   Radar,
   Info,
-} from 'lucide-react';
-import { MapSettings, MapStyleMode } from '../../types';
+} from '../Icons';
+import { CommunityPoiSummary, MapSettings, MapStyleMode } from '../../types';
 import { playSound } from '../../utils/audio';
 
 interface SettingsModalProps {
@@ -21,6 +21,9 @@ interface SettingsModalProps {
   onUpdateSettings: (newSettings: Partial<MapSettings>) => void;
   onClose: () => void;
   onResetProgress: () => void;
+  communitySummary?: CommunityPoiSummary;
+  isLoadingCommunityData?: boolean;
+  communityLoadError?: string | null;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -28,6 +31,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onUpdateSettings,
   onClose,
   onResetProgress,
+  communitySummary,
+  isLoadingCommunityData,
+  communityLoadError,
 }) => {
   const styles: { id: MapStyleMode; label: string; desc: string; icon: React.ReactNode }[] = [
     {
@@ -183,6 +189,32 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   />
                 </button>
               </div>
+
+              {/* Legacy Sample Locations Layer */}
+              <div className="flex items-center justify-between p-3 bg-[#211930] border border-[#392344] rounded-xl">
+                <div>
+                  <div className="text-xs font-semibold text-[#FFF0E8]">Legacy Sample Layer</div>
+                  <div className="text-[11px] text-[#FFF0E8]/55">
+                    Show the original fictional sample coordinates (42)
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    onUpdateSettings({ showLegacySamples: settings.showLegacySamples === false });
+                    playSound('toggle', settings.soundEffects);
+                  }}
+                  className={`w-11 h-6 rounded-full transition-colors relative cursor-pointer ${
+                    settings.showLegacySamples !== false ? 'bg-[#42CFC3]' : 'bg-[#392344]'
+                  }`}
+                  aria-label="Toggle legacy sample locations layer"
+                >
+                  <span
+                    className={`block w-4 h-4 rounded-full bg-[#FFF0E8] shadow-sm transition-transform ${
+                      settings.showLegacySamples !== false ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
             </div>
           </div>
 
@@ -224,14 +256,30 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
           </div>
 
-          {/* Independent Disclaimer */}
+          {/* Independent Disclaimer & Community Attribution */}
           <div className="p-3.5 bg-[#211930] border border-[#392344] rounded-xl space-y-1.5">
             <div className="flex items-center gap-2 text-xs font-bold text-[#FFF0E8]">
               <Info className="w-4 h-4 text-[#FFAD83] shrink-0" />
-              Independent Fan Companion Concept
+              Independent Fan Companion & Attribution
             </div>
             <p className="text-[11px] text-[#FFF0E8]/65 leading-relaxed">
-              Leonida Atlas is an independent fan project concept inspired by the fictional setting of GTA VI. It is not affiliated with, endorsed by, or associated with Rockstar Games or Take-Two Interactive. All coordinates and locations presented are original sample concept data.
+              Leonida Atlas is an independent fan project concept inspired by the fictional setting of GTA VI. It is not affiliated with, endorsed by, or associated with Rockstar Games or Take-Two Interactive.
+            </p>
+            <p className="text-[10px] text-[#FFF0E8]/55 leading-relaxed pt-1 border-t border-[#392344]/70">
+              Community dataset prepared: GTA VI Landmarks Data (CC BY 4.0) — https://map.gtadb.org · Credits: gtadb.org and all contributors (YANIS V18 / GTA Mapping Community).
+              {communitySummary && (
+                <>
+                  {' '}
+                  ({communitySummary.total.toLocaleString()} POIs indexed ·{' '}
+                  {communitySummary.geolocated.toLocaleString()} geolocated:{' '}
+                  {communitySummary.confirmedCoords.toLocaleString()} confirmed,{' '}
+                  {communitySummary.estimatedCoords.toLocaleString()} estimated)
+                </>
+              )}
+              {!communitySummary && isLoadingCommunityData && <> (Loading dataset summary…)</>}
+              {!communitySummary && !isLoadingCommunityData && communityLoadError && (
+                <> ({communityLoadError})</>
+              )}
             </p>
           </div>
         </div>

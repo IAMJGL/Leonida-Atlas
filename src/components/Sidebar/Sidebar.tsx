@@ -16,7 +16,7 @@ import {
   Filter,
   BarChart3,
   X,
-} from 'lucide-react';
+} from '../Icons';
 import { LocationCategory, DiscoveryFilter, RegionId } from '../../types';
 import { CATEGORIES, REGIONS } from '../../data/locations';
 import { playSound } from '../../utils/audio';

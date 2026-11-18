@@ -13,7 +13,7 @@ import {
   BarChart3,
   Sparkles,
   Menu,
-} from 'lucide-react';
+} from '../Icons';
 import { LocationItem, MapSettings, MapStyleMode, ProgressSummary } from '../../types';
 import { CATEGORIES } from '../../data/locations';
 import { playSound } from '../../utils/audio';

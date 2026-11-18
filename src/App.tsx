@@ -14,9 +14,16 @@ import {
   Waypoint,
   RegionId,
   ProgressSummary,
+  CommunityLandmarkItem,
 } from './types';
 import { playSound } from './utils/audio';
-import { Layers } from 'lucide-react';
+import { Layers } from './components/Icons';
+import {
+  loadGtadbLandmarks,
+  getCachedGtadbLandmarks,
+  ensureNonOverwritingCommunityList,
+  summarizeCommunityPois,
+} from './data/gtadbAdapter';
 
 const STORAGE_KEY_DISCOVERED = 'leonida_atlas_discovered_ids_v1';
 const STORAGE_KEY_NOTES = 'leonida_atlas_user_notes_v1';
@@ -28,6 +35,7 @@ const DEFAULT_SETTINGS: MapSettings = {
   showGridLines: false,
   soundEffects: true,
   mapStyle: 'tropical',
+  showLegacySamples: true,
 };
 
 const DEFAULT_CATEGORIES: Record<LocationCategory, boolean> = {
@@ -201,9 +209,65 @@ export default function App() {
     setSettings((prev) => ({ ...prev, ...newSettings }));
   };
 
+  // Lazy-loaded GTADB Community POI layer (deferred until Community/Attribution view is opened)
+  const [rawCommunityLandmarks, setRawCommunityLandmarks] = useState<
+    CommunityLandmarkItem[] | null
+  >(() => getCachedGtadbLandmarks());
+  const [isLoadingCommunityData, setIsLoadingCommunityData] = useState(false);
+  const [communityLoadError, setCommunityLoadError] = useState<string | null>(null);
+
+  const requestCommunityDataset = useCallback(() => {
+    if (rawCommunityLandmarks !== null || isLoadingCommunityData) return;
+
+    setIsLoadingCommunityData(true);
+    setCommunityLoadError(null);
+
+    loadGtadbLandmarks()
+      .then((items) => {
+        setRawCommunityLandmarks(items);
+      })
+      .catch(() => {
+        setCommunityLoadError('Unable to load optional community POI summary');
+      })
+      .finally(() => {
+        setIsLoadingCommunityData(false);
+      });
+  }, [rawCommunityLandmarks, isLoadingCommunityData]);
+
+  useEffect(() => {
+    if (isSettingsOpen) {
+      requestCommunityDataset();
+    }
+  }, [isSettingsOpen, requestCommunityDataset]);
+
+  const communityLandmarks = useMemo(
+    () =>
+      rawCommunityLandmarks
+        ? ensureNonOverwritingCommunityList(locations, rawCommunityLandmarks)
+        : null,
+    [locations, rawCommunityLandmarks]
+  );
+
+  const communitySummary = useMemo(
+    () => (communityLandmarks ? summarizeCommunityPois(communityLandmarks) : undefined),
+    [communityLandmarks]
+  );
+
+  // Respect Legacy Sample Layer visibility in header search
+  const searchableLocations = useMemo(
+    () =>
+      locations.filter(
+        (loc) => !(loc.isFictionalSample && settings.showLegacySamples === false)
+      ),
+    [locations, settings.showLegacySamples]
+  );
+
   // Filter Locations for Map Display
   const filteredLocations = useMemo(() => {
     return locations.filter((loc) => {
+      // 0. Legacy Fictional Sample Layer Toggle
+      if (loc.isFictionalSample && settings.showLegacySamples === false) return false;
+
       // 1. Category Visibility Toggle
       if (!activeCategories[loc.category]) return false;
 
@@ -229,17 +293,30 @@ export default function App() {
 
       return true;
     });
-  }, [locations, activeCategories, discoveryFilter, selectedRegion, searchQuery]);
+  }, [
+    locations,
+    settings.showLegacySamples,
+    activeCategories,
+    discoveryFilter,
+    selectedRegion,
+    searchQuery,
+  ]);
+
+  // Gameplay-eligible records only (community POIs never count unless explicitly promoted)
+  const gameplayProgressLocations = useMemo(
+    () => locations.filter((l) => l.countsTowardGameplayProgress !== false),
+    [locations]
+  );
 
   // Calculate Progress Stats
   const progressSummary: ProgressSummary = useMemo(() => {
-    const total = locations.length;
-    const discovered = locations.filter((l) => l.discovered).length;
+    const total = gameplayProgressLocations.length;
+    const discovered = gameplayProgressLocations.filter((l) => l.discovered).length;
     const undiscovered = total - discovered;
     const completionPercentage = total > 0 ? Math.round((discovered / total) * 100) : 0;
 
     const categoryBreakdown = (Object.keys(CATEGORIES) as LocationCategory[]).map((cat) => {
-      const catLocs = locations.filter((l) => l.category === cat);
+      const catLocs = gameplayProgressLocations.filter((l) => l.category === cat);
       const catTotal = catLocs.length;
       const catDisc = catLocs.filter((l) => l.discovered).length;
       return {
@@ -252,7 +329,7 @@ export default function App() {
 
     const regionBreakdown = (Object.keys(REGIONS) as RegionId[]).map((regId) => {
       const reg = REGIONS[regId];
-      const regLocs = locations.filter((l) => l.region === regId);
+      const regLocs = gameplayProgressLocations.filter((l) => l.region === regId);
       const regTotal = regLocs.length;
       const regDisc = regLocs.filter((l) => l.discovered).length;
       return {
@@ -272,7 +349,7 @@ export default function App() {
       categoryBreakdown,
       regionBreakdown,
     };
-  }, [locations]);
+  }, [gameplayProgressLocations]);
 
   // Category counts for sidebar
   const categoryStats = useMemo(() => {
@@ -286,7 +363,7 @@ export default function App() {
       secrets: { total: 0, discovered: 0 },
     };
 
-    locations.forEach((loc) => {
+    gameplayProgressLocations.forEach((loc) => {
       if (stats[loc.category]) {
         stats[loc.category].total += 1;
         if (loc.discovered) stats[loc.category].discovered += 1;
@@ -294,13 +371,13 @@ export default function App() {
     });
 
     return stats;
-  }, [locations]);
+  }, [gameplayProgressLocations]);
 
   return (
     <div className="flex flex-col h-screen w-screen bg-[#171426] text-[#FFF0E8] overflow-hidden font-sans">
       {/* 1. TOP NAVIGATION BAR */}
       <Header
-        locations={locations}
+        locations={searchableLocations}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onSelectLocation={(loc) => {
@@ -389,7 +466,9 @@ export default function App() {
           {filteredLocations.length === 0 && (
             <div className="absolute top-20 left-1/2 -translate-x-1/2 z-20 px-4 py-2.5 bg-[#211930]/95 border border-[#392344] rounded-xl shadow-2xl backdrop-blur-md text-center pointer-events-auto">
               <p className="text-xs font-semibold text-[#FFF0E8]">
-                No coordinates match your active filters
+                {settings.showLegacySamples === false
+                  ? 'Legacy sample layer is hidden'
+                  : 'No coordinates match your active filters'}
               </p>
               <div className="flex items-center justify-center gap-3 mt-1 text-[11px]">
                 <button
@@ -398,10 +477,15 @@ export default function App() {
                     setDiscoveryFilter('all');
                     setSelectedRegion('all');
                     setSearchQuery('');
+                    if (settings.showLegacySamples === false) {
+                      handleUpdateSettings({ showLegacySamples: true });
+                    }
                   }}
                   className="text-[#FF8FA3] hover:text-[#FF5CBA] font-semibold hover:underline cursor-pointer"
                 >
-                  Reset all filters
+                  {settings.showLegacySamples === false
+                    ? 'Show legacy sample layer'
+                    : 'Reset all filters'}
                 </button>
               </div>
             </div>
@@ -430,6 +514,9 @@ export default function App() {
           onUpdateSettings={handleUpdateSettings}
           onClose={() => setIsSettingsOpen(false)}
           onResetProgress={handleResetProgress}
+          communitySummary={communitySummary}
+          isLoadingCommunityData={isLoadingCommunityData}
+          communityLoadError={communityLoadError}
         />
       )}
     </div>

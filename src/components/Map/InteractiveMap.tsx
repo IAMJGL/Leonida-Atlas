@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { Plus, Minus, RotateCcw, Compass, MapPin, Maximize2 } from 'lucide-react';
+import { Plus, Minus, RotateCcw, Compass, MapPin, Maximize2 } from '../Icons';
 import { LeonidaMapSvg } from './LeonidaMapSvg';
 import { MapMarker } from './MapMarker';
 import { MinimapRadar } from './MinimapRadar';

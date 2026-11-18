@@ -1,5 +1,5 @@
 import React from 'react';
-import { Crosshair, Compass } from 'lucide-react';
+import { Crosshair, Compass } from '../Icons';
 import { MAP_WIDTH, MAP_HEIGHT } from '../../constants/map';
 
 interface MinimapRadarProps {

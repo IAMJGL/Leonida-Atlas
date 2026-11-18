@@ -11,7 +11,7 @@ import {
   Share2,
   AlertCircle,
   Sparkles,
-} from 'lucide-react';
+} from '../Icons';
 import { LocationItem, Waypoint } from '../../types';
 import { CATEGORIES } from '../../data/locations';
 import { playSound } from '../../utils/audio';

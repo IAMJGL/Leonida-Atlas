@@ -8,7 +8,7 @@ import {
   Sparkles,
   ArrowRight,
   RotateCcw,
-} from 'lucide-react';
+} from '../Icons';
 import { ProgressSummary, LocationCategory, RegionId } from '../../types';
 import { CATEGORIES, REGIONS } from '../../data/locations';
 import { playSound } from '../../utils/audio';
