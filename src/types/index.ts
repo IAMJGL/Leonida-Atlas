@@ -168,14 +168,18 @@ export type DiscoveryFilter = 'all' | 'discovered' | 'undiscovered';
 
 export type MapStyleMode = 'tropical' | 'recon' | 'night';
 
+export type MapRendererMode = 'legacy-svg' | 'yanis-v18';
+
 export interface MapSettings {
   showRoads: boolean;
   showDistrictLabels: boolean;
   showGridLines: boolean;
   soundEffects: boolean;
   mapStyle: MapStyleMode;
-  /** Toggles visibility of the legacy 32 fictional sample locations layer (default: true) */
+  /** Toggles visibility of the legacy fictional sample locations layer (default: true) */
   showLegacySamples?: boolean;
+  /** Active map rendering engine (default: 'legacy-svg' during Phase 2 preview) */
+  mapRenderer?: MapRendererMode;
 }
 
 export interface Waypoint {

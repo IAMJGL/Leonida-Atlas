@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Header } from './components/Header/Header';
 import { Sidebar, SidebarTab } from './components/Sidebar/Sidebar';
 import { InteractiveMap } from './components/Map/InteractiveMap';
+import { YanisTileMap } from './components/Map/YanisTileMap';
 import { LocationDetailPanel } from './components/LocationDetail/LocationDetailPanel';
 import { ProgressTracker } from './components/Dashboard/ProgressTracker';
 import { SettingsModal } from './components/Modals/SettingsModal';
@@ -36,6 +37,7 @@ const DEFAULT_SETTINGS: MapSettings = {
   soundEffects: true,
   mapStyle: 'tropical',
   showLegacySamples: true,
+  mapRenderer: 'legacy-svg',
 };
 
 const DEFAULT_CATEGORIES: Record<LocationCategory, boolean> = {
@@ -418,77 +420,83 @@ export default function App() {
 
         {/* Interactive Open-World Map Canvas */}
         <main className="relative flex-1 h-full overflow-hidden bg-[#171426]">
-          <InteractiveMap
-            locations={filteredLocations}
-            selectedLocation={selectedLocation}
-            waypoint={waypoint}
-            settings={settings}
-            onSelectLocation={(loc) => {
-              setSelectedLocation(loc);
-              playSound('select', settings.soundEffects);
-            }}
-            onSetWaypoint={setWaypoint}
-          />
+          {(settings.mapRenderer ?? 'legacy-svg') === 'yanis-v18' ? (
+            <YanisTileMap settings={settings} />
+          ) : (
+            <>
+              <InteractiveMap
+                locations={filteredLocations}
+                selectedLocation={selectedLocation}
+                waypoint={waypoint}
+                settings={settings}
+                onSelectLocation={(loc) => {
+                  setSelectedLocation(loc);
+                  playSound('select', settings.soundEffects);
+                }}
+                onSetWaypoint={setWaypoint}
+              />
 
-          {/* Floating Mobile Quick Directory Trigger (When no marker panel is open) */}
-          {!selectedLocation && (
-            <button
-              type="button"
-              onClick={() => {
-                setIsMobileMenuOpen(true);
-                playSound('toggle', settings.soundEffects);
-              }}
-              className="md:hidden absolute bottom-4 left-4 z-20 flex items-center gap-2 px-3.5 py-2.5 bg-[#211930]/95 hover:bg-[#392344] border border-[#392344] rounded-xl text-[#FFF0E8] shadow-xl backdrop-blur-md transition-all active:scale-95 cursor-pointer"
-              aria-label="Open Directory and Filter Menu"
-            >
-              <Layers className="w-4 h-4 text-[#FF5CBA]" />
-              <span className="text-xs font-bold tracking-wide">Directory</span>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#171426] text-[#FFAD83] border border-[#392344]">
-                {filteredLocations.length}
-              </span>
-            </button>
-          )}
-
-          {/* Location Detail Panel (when marker selected - bottom sheet on mobile, top-left on desktop) */}
-          {selectedLocation && (
-            <LocationDetailPanel
-              location={selectedLocation}
-              waypoint={waypoint}
-              onClose={() => setSelectedLocation(null)}
-              onToggleDiscovered={handleToggleDiscovered}
-              onSetWaypoint={setWaypoint}
-              onSaveNote={handleSaveNote}
-              soundEffects={settings.soundEffects}
-            />
-          )}
-
-          {/* Empty search feedback when no markers match */}
-          {filteredLocations.length === 0 && (
-            <div className="absolute top-20 left-1/2 -translate-x-1/2 z-20 px-4 py-2.5 bg-[#211930]/95 border border-[#392344] rounded-xl shadow-2xl backdrop-blur-md text-center pointer-events-auto">
-              <p className="text-xs font-semibold text-[#FFF0E8]">
-                {settings.showLegacySamples === false
-                  ? 'Legacy sample layer is hidden'
-                  : 'No coordinates match your active filters'}
-              </p>
-              <div className="flex items-center justify-center gap-3 mt-1 text-[11px]">
+              {/* Floating Mobile Quick Directory Trigger (When no marker panel is open) */}
+              {!selectedLocation && (
                 <button
+                  type="button"
                   onClick={() => {
-                    handleSetAllCategories(true);
-                    setDiscoveryFilter('all');
-                    setSelectedRegion('all');
-                    setSearchQuery('');
-                    if (settings.showLegacySamples === false) {
-                      handleUpdateSettings({ showLegacySamples: true });
-                    }
+                    setIsMobileMenuOpen(true);
+                    playSound('toggle', settings.soundEffects);
                   }}
-                  className="text-[#FF8FA3] hover:text-[#FF5CBA] font-semibold hover:underline cursor-pointer"
+                  className="md:hidden absolute bottom-4 left-4 z-20 flex items-center gap-2 px-3.5 py-2.5 bg-[#211930]/95 hover:bg-[#392344] border border-[#392344] rounded-xl text-[#FFF0E8] shadow-xl backdrop-blur-md transition-all active:scale-95 cursor-pointer"
+                  aria-label="Open Directory and Filter Menu"
                 >
-                  {settings.showLegacySamples === false
-                    ? 'Show legacy sample layer'
-                    : 'Reset all filters'}
+                  <Layers className="w-4 h-4 text-[#FF5CBA]" />
+                  <span className="text-xs font-bold tracking-wide">Directory</span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#171426] text-[#FFAD83] border border-[#392344]">
+                    {filteredLocations.length}
+                  </span>
                 </button>
-              </div>
-            </div>
+              )}
+
+              {/* Location Detail Panel (when marker selected - bottom sheet on mobile, top-left on desktop) */}
+              {selectedLocation && (
+                <LocationDetailPanel
+                  location={selectedLocation}
+                  waypoint={waypoint}
+                  onClose={() => setSelectedLocation(null)}
+                  onToggleDiscovered={handleToggleDiscovered}
+                  onSetWaypoint={setWaypoint}
+                  onSaveNote={handleSaveNote}
+                  soundEffects={settings.soundEffects}
+                />
+              )}
+
+              {/* Empty search feedback when no markers match */}
+              {filteredLocations.length === 0 && (
+                <div className="absolute top-20 left-1/2 -translate-x-1/2 z-20 px-4 py-2.5 bg-[#211930]/95 border border-[#392344] rounded-xl shadow-2xl backdrop-blur-md text-center pointer-events-auto">
+                  <p className="text-xs font-semibold text-[#FFF0E8]">
+                    {settings.showLegacySamples === false
+                      ? 'Legacy sample layer is hidden'
+                      : 'No coordinates match your active filters'}
+                  </p>
+                  <div className="flex items-center justify-center gap-3 mt-1 text-[11px]">
+                    <button
+                      onClick={() => {
+                        handleSetAllCategories(true);
+                        setDiscoveryFilter('all');
+                        setSelectedRegion('all');
+                        setSearchQuery('');
+                        if (settings.showLegacySamples === false) {
+                          handleUpdateSettings({ showLegacySamples: true });
+                        }
+                      }}
+                      className="text-[#FF8FA3] hover:text-[#FF5CBA] font-semibold hover:underline cursor-pointer"
+                    >
+                      {settings.showLegacySamples === false
+                        ? 'Show legacy sample layer'
+                        : 'Reset all filters'}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </main>
       </div>

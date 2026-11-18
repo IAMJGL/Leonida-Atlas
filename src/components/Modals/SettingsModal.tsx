@@ -13,7 +13,7 @@ import {
   Radar,
   Info,
 } from '../Icons';
-import { CommunityPoiSummary, MapSettings, MapStyleMode } from '../../types';
+import { CommunityPoiSummary, MapRendererMode, MapSettings, MapStyleMode } from '../../types';
 import { playSound } from '../../utils/audio';
 
 interface SettingsModalProps {
@@ -35,6 +35,21 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   isLoadingCommunityData,
   communityLoadError,
 }) => {
+  const activeRenderer: MapRendererMode = settings.mapRenderer ?? 'legacy-svg';
+
+  const renderers: { id: MapRendererMode; label: string; desc: string }[] = [
+    {
+      id: 'legacy-svg',
+      label: 'Legacy Fictional SVG',
+      desc: 'Original vector map with the 42 fictional sample locations, radar, and discovery tracking',
+    },
+    {
+      id: 'yanis-v18',
+      label: 'YANIS V18 Tiles (Preview)',
+      desc: 'Community geographical tile map (z=0–3, 593 tiles, CC BY 4.0) without markers',
+    },
+  ];
+
   const styles: { id: MapStyleMode; label: string; desc: string; icon: React.ReactNode }[] = [
     {
       id: 'tropical',
@@ -80,6 +95,38 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
         {/* Body */}
         <div className="p-5 space-y-5 overflow-y-auto max-h-[80vh]">
+          {/* Map Engine Switcher */}
+          <div>
+            <label className="block text-xs font-mono uppercase text-[#FFF0E8]/55 mb-2">
+              Map Engine
+            </label>
+            <div className="space-y-2">
+              {renderers.map((r) => (
+                <button
+                  key={r.id}
+                  type="button"
+                  onClick={() => {
+                    onUpdateSettings({ mapRenderer: r.id });
+                    playSound('toggle', settings.soundEffects);
+                  }}
+                  className={`w-full p-3 rounded-xl border text-left flex items-start gap-3 transition-colors cursor-pointer ${
+                    activeRenderer === r.id
+                      ? 'bg-[#392344]/85 border-[#42CFC3]/75 text-[#FFF0E8]'
+                      : 'bg-[#211930]/70 border-[#392344] text-[#FFF0E8]/70 hover:text-[#FFF0E8] hover:bg-[#2B1F3A]'
+                  }`}
+                >
+                  <div className="p-2 rounded-lg bg-[#171426] border border-[#392344] mt-0.5">
+                    <Map className={`w-4 h-4 ${activeRenderer === r.id ? 'text-[#42CFC3]' : 'text-[#FFF0E8]/50'}`} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs font-bold text-[#FFF0E8]">{r.label}</div>
+                    <div className="text-[11px] text-[#FFF0E8]/60">{r.desc}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Map Style Theme */}
           <div>
             <label className="block text-xs font-mono uppercase text-[#FFF0E8]/55 mb-2">
